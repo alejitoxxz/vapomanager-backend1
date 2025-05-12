@@ -1,6 +1,8 @@
 package co.edu.uco.vapomanager.crosscutting.utilitarios;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public final class UtilFecha {
 
@@ -8,23 +10,18 @@ public final class UtilFecha {
         super();
     }
 
+   
     public static LocalDateTime obtenerFechaHoraActual() {
         return LocalDateTime.now();
     }
 
-    public static boolean esFechaPasada(final LocalDateTime fecha) {
-        return fecha.isBefore(LocalDateTime.now());
+    
+    public static ZonedDateTime obtenerFechaHoraActualZona() {
+        return ZonedDateTime.now(ZoneId.systemDefault());
     }
 
-    public static boolean esFechaFutura(final LocalDateTime fecha) {
-        return fecha.isAfter(LocalDateTime.now());
-    }
-
-    public static boolean esNula(final LocalDateTime fecha) {
-        return fecha == null;
-    }
-
-    public static LocalDateTime obtenerValorDefecto(final LocalDateTime fecha) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(fecha, LocalDateTime.now());
+    
+    public static ZonedDateTime obtenerValorDefecto(final ZonedDateTime fecha) {
+        return fecha != null ? fecha : obtenerFechaHoraActualZona();
     }
 }

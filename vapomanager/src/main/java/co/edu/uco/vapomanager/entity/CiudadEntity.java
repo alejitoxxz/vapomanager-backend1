@@ -6,34 +6,34 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
-public final class CiudadEntity {
+public class CiudadEntity {
+
+    public static final CiudadEntity DEFAULT_OBJECT = new CiudadEntity();
 
     private UUID id;
     private String nombre;
     private DepartamentoEntity departamento;
 
-    public static final CiudadEntity DEFAULT_OBJECT = new CiudadEntity();
-
     public CiudadEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-        setDepartamento(new DepartamentoEntity());
+        setId(UtilUUID.obtenerValorDefecto())
+        .setNombre(UtilTexto.getInstance().obtenerValorDefecto())
+        .setDepartamento(new DepartamentoEntity());
     }
 
     public CiudadEntity(final UUID id) {
-        setId(id);
-        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-        setDepartamento(new DepartamentoEntity());
+        setId(id)
+        .setNombre(UtilTexto.getInstance().obtenerValorDefecto())
+        .setDepartamento(new DepartamentoEntity());
     }
 
     public CiudadEntity(final UUID id, final String nombre, final DepartamentoEntity departamento) {
-        setId(id);
-        setNombre(nombre);
-        setDepartamento(departamento);
+        setId(id)
+        .setNombre(nombre)
+        .setDepartamento(departamento);
     }
 
     public static CiudadEntity obtenerValorDefecto(final CiudadEntity ciudad) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(ciudad, DEFAULT_OBJECT);
+        return UtilObjeto.getInstance().obtenerValorDefecto(ciudad, new CiudadEntity());
     }
 
     public UUID getId() {

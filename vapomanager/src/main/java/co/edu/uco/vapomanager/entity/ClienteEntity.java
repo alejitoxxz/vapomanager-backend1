@@ -206,7 +206,7 @@ public final class ClienteEntity {
     }
 
     public ClienteEntity setFechaRegistro(LocalDateTime fechaRegistro) {
-        this.fechaRegistro = UtilFecha.obtenerValorDefecto(fechaRegistro);
+        this.fechaRegistro = UtilFecha.obtenerFechaHoraActual();
         return this;
     }
 
