@@ -40,7 +40,7 @@ public final class MarcaEntity {
     }
 
     public MarcaEntity setMarca(String marca) {
-        this.marca = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(marca);
+        this.marca = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(marca);
         return this;
     }
 }

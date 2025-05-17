@@ -4,13 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilBigDecimal;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilBooleano;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilCorreo;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilFecha;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
 
 public final class ClienteDTO {
 
@@ -32,11 +26,11 @@ public final class ClienteDTO {
     private LocalDateTime fechaRegistro;
     private BigDecimal totalComprado;
 
-    public ClienteDTO() {
+    private ClienteDTO() {
         setId(UtilUUID.obtenerValorDefecto());
         setNombres(UtilTexto.getInstance().obtenerValorDefecto());
         setApellidos(UtilTexto.getInstance().obtenerValorDefecto());
-        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(correoElectronico));
+        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
         setConfirmacionCorreo(false);
         setTelefono(UtilTexto.getInstance().obtenerValorDefecto());
         setConfirmacionTelefono(false);
@@ -50,15 +44,15 @@ public final class ClienteDTO {
         setTotalComprado(BigDecimal.ZERO);
     }
 
-    public static ClienteDTO obtenerValorDefecto(final ClienteDTO cliente) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(cliente, ClienteDTO.DEFAULT_OBJECT);
+    public static ClienteDTO crear() {
+        return new ClienteDTO();
     }
 
     public UUID getId() {
         return id;
     }
 
-    public ClienteDTO setId(UUID id) {
+    public ClienteDTO setId(final UUID id) {
         this.id = UtilUUID.obtenerValorDefecto(id);
         return this;
     }
@@ -67,7 +61,7 @@ public final class ClienteDTO {
         return nombres;
     }
 
-    public ClienteDTO setNombres(String nombres) {
+    public ClienteDTO setNombres(final String nombres) {
         this.nombres = UtilTexto.getInstance().obtenerValorDefecto(nombres);
         return this;
     }
@@ -76,7 +70,7 @@ public final class ClienteDTO {
         return apellidos;
     }
 
-    public ClienteDTO setApellidos(String apellidos) {
+    public ClienteDTO setApellidos(final String apellidos) {
         this.apellidos = UtilTexto.getInstance().obtenerValorDefecto(apellidos);
         return this;
     }
@@ -85,7 +79,7 @@ public final class ClienteDTO {
         return correoElectronico;
     }
 
-    public ClienteDTO setCorreoElectronico(String correoElectronico) {
+    public ClienteDTO setCorreoElectronico(final String correoElectronico) {
         this.correoElectronico = UtilCorreo.obtenerValorDefecto(correoElectronico);
         return this;
     }
@@ -94,7 +88,7 @@ public final class ClienteDTO {
         return confirmacionCorreo;
     }
 
-    public ClienteDTO setConfirmacionCorreo(boolean confirmacionCorreo) {
+    public ClienteDTO setConfirmacionCorreo(final boolean confirmacionCorreo) {
         this.confirmacionCorreo = UtilBooleano.obtenerValorDefecto(confirmacionCorreo);
         return this;
     }
@@ -103,7 +97,7 @@ public final class ClienteDTO {
         return telefono;
     }
 
-    public ClienteDTO setTelefono(String telefono) {
+    public ClienteDTO setTelefono(final String telefono) {
         this.telefono = UtilTexto.getInstance().obtenerValorDefecto(telefono);
         return this;
     }
@@ -112,7 +106,7 @@ public final class ClienteDTO {
         return confirmacionTelefono;
     }
 
-    public ClienteDTO setConfirmacionTelefono(boolean confirmacionTelefono) {
+    public ClienteDTO setConfirmacionTelefono(final boolean confirmacionTelefono) {
         this.confirmacionTelefono = UtilBooleano.obtenerValorDefecto(confirmacionTelefono);
         return this;
     }
@@ -121,7 +115,7 @@ public final class ClienteDTO {
         return estadoCuenta;
     }
 
-    public ClienteDTO setEstadoCuenta(boolean estadoCuenta) {
+    public ClienteDTO setEstadoCuenta(final boolean estadoCuenta) {
         this.estadoCuenta = UtilBooleano.obtenerValorDefecto(estadoCuenta);
         return this;
     }
@@ -130,7 +124,7 @@ public final class ClienteDTO {
         return tipoDocumento;
     }
 
-    public ClienteDTO setTipoDocumento(TipoDocumentoDTO tipoDocumento) {
+    public ClienteDTO setTipoDocumento(final TipoDocumentoDTO tipoDocumento) {
         this.tipoDocumento = UtilObjeto.getInstance().obtenerValorDefecto(tipoDocumento, TipoDocumentoDTO.DEFAULT_OBJECT);
         return this;
     }
@@ -139,7 +133,7 @@ public final class ClienteDTO {
         return numeroDocumento;
     }
 
-    public ClienteDTO setNumeroDocumento(int numeroDocumento) {
+    public ClienteDTO setNumeroDocumento(final int numeroDocumento) {
         this.numeroDocumento = numeroDocumento;
         return this;
     }
@@ -148,7 +142,7 @@ public final class ClienteDTO {
         return direccion;
     }
 
-    public ClienteDTO setDireccion(String direccion) {
+    public ClienteDTO setDireccion(final String direccion) {
         this.direccion = UtilTexto.getInstance().obtenerValorDefecto(direccion);
         return this;
     }
@@ -157,7 +151,7 @@ public final class ClienteDTO {
         return ciudad;
     }
 
-    public ClienteDTO setCiudad(CiudadDTO ciudad) {
+    public ClienteDTO setCiudad(final CiudadDTO ciudad) {
         this.ciudad = UtilObjeto.getInstance().obtenerValorDefecto(ciudad, CiudadDTO.DEFAULT_OBJECT);
         return this;
     }
@@ -166,7 +160,7 @@ public final class ClienteDTO {
         return descripcionDireccion;
     }
 
-    public ClienteDTO setDescripcionDireccion(String descripcionDireccion) {
+    public ClienteDTO setDescripcionDireccion(final String descripcionDireccion) {
         this.descripcionDireccion = UtilTexto.getInstance().obtenerValorDefecto(descripcionDireccion);
         return this;
     }
@@ -175,7 +169,7 @@ public final class ClienteDTO {
         return fechaRegistro;
     }
 
-    public ClienteDTO setFechaRegistro(LocalDateTime fechaRegistro) {
+    public ClienteDTO setFechaRegistro(final LocalDateTime fechaRegistro) {
         this.fechaRegistro = UtilFecha.obtenerFechaHoraActual();
         return this;
     }
@@ -184,7 +178,7 @@ public final class ClienteDTO {
         return totalComprado;
     }
 
-    public ClienteDTO setTotalComprado(BigDecimal totalComprado) {
+    public ClienteDTO setTotalComprado(final BigDecimal totalComprado) {
         this.totalComprado = UtilBigDecimal.obtenerValorDefecto(totalComprado);
         return this;
     }

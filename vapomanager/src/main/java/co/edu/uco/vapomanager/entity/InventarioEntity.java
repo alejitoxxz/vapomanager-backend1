@@ -18,7 +18,7 @@ public final class InventarioEntity {
     private ProductoEntity producto;
 
     public InventarioEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
+        setId(UtilUUID.obtenerValorDefecto(null));
         setCantidadDisponible(0);
         setCantidadMinima(0);
         setFechaIngreso(UtilFecha.obtenerFechaHoraActualZona()); 
@@ -41,44 +41,39 @@ public final class InventarioEntity {
         return id;
     }
 
-    public InventarioEntity setId(UUID id) {
+    public void setId(UUID id) {
         this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
     }
 
     public int getCantidadDisponible() {
         return cantidadDisponible;
     }
 
-    public InventarioEntity setCantidadDisponible(int cantidadDisponible) {
+    public void setCantidadDisponible(int cantidadDisponible) {
         this.cantidadDisponible = cantidadDisponible;
-        return this;
     }
 
     public int getCantidadMinima() {
         return cantidadMinima;
     }
 
-    public InventarioEntity setCantidadMinima(int cantidadMinima) {
+    public void setCantidadMinima(int cantidadMinima) {
         this.cantidadMinima = cantidadMinima;
-        return this;
     }
 
     public ZonedDateTime getFechaIngreso() {
         return fechaIngreso;
     }
 
-    public InventarioEntity setFechaIngreso(ZonedDateTime fechaIngreso) {
+    public void setFechaIngreso(ZonedDateTime fechaIngreso) {
         this.fechaIngreso = UtilFecha.obtenerValorDefecto(fechaIngreso);
-        return this;
     }
 
     public ProductoEntity getProducto() {
         return producto;
     }
 
-    public InventarioEntity setProducto(ProductoEntity producto) {
+    public void setProducto(ProductoEntity producto) {
         this.producto = UtilObjeto.getInstance().obtenerValorDefecto(producto, ProductoEntity.DEFAULT_OBJECT);
-        return this;
     }
 }

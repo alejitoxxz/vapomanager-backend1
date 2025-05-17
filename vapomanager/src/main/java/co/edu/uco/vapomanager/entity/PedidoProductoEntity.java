@@ -8,8 +8,6 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
 public final class PedidoProductoEntity {
 
-    public static final PedidoProductoEntity DEFAULT_OBJECT = new PedidoProductoEntity();
-
     private UUID id;
     private ProductoEntity producto;
     private int cantidad;
@@ -19,26 +17,28 @@ public final class PedidoProductoEntity {
     private BigDecimal subtotal;
 
     public PedidoProductoEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setProducto(ProductoEntity.DEFAULT_OBJECT);
-        setCantidad(0);
-        setPedido(PedidoEntity.DEFAULT_OBJECT);
-        setPrecioVenta(BigDecimal.ZERO);
-        setGananciaUnidad(BigDecimal.ZERO);
-        setSubtotal(BigDecimal.ZERO);
+        this.id = UtilUUID.obtenerValorDefecto();
+        this.producto = null; // se evita DEFAULT_OBJECT
+        this.cantidad = 0;
+        this.pedido = null; // se evita DEFAULT_OBJECT
+        this.precioVenta = BigDecimal.ZERO;
+        this.gananciaUnidad = BigDecimal.ZERO;
+        this.subtotal = BigDecimal.ZERO;
     }
 
-    public PedidoProductoEntity(UUID id, ProductoEntity producto, int cantidad, PedidoEntity pedido, BigDecimal precioVenta, BigDecimal gananciaUnidad, BigDecimal subtotal) {
-        setId(id);
-        setProducto(producto);
-        setCantidad(cantidad);
-        setPedido(pedido);
-        setPrecioVenta(precioVenta);
-        setGananciaUnidad(gananciaUnidad);
-        setSubtotal(subtotal);
+    public PedidoProductoEntity(UUID id, ProductoEntity producto, int cantidad, PedidoEntity pedido,
+                                 BigDecimal precioVenta, BigDecimal gananciaUnidad, BigDecimal subtotal) {
+        this.id = UtilUUID.obtenerValorDefecto(id);
+        this.producto = UtilObjeto.getInstance().obtenerValorDefecto(producto, null);
+        this.cantidad = cantidad;
+        this.pedido = UtilObjeto.getInstance().obtenerValorDefecto(pedido, null);
+        this.precioVenta = UtilObjeto.getInstance().obtenerValorDefecto(precioVenta, BigDecimal.ZERO);
+        this.gananciaUnidad = UtilObjeto.getInstance().obtenerValorDefecto(gananciaUnidad, BigDecimal.ZERO);
+        this.subtotal = UtilObjeto.getInstance().obtenerValorDefecto(subtotal, BigDecimal.ZERO);
     }
 
-    public static PedidoProductoEntity create(UUID id, ProductoEntity producto, int cantidad, PedidoEntity pedido, BigDecimal precioVenta, BigDecimal gananciaUnidad, BigDecimal subtotal) {
+    public static PedidoProductoEntity create(UUID id, ProductoEntity producto, int cantidad, PedidoEntity pedido,
+                                               BigDecimal precioVenta, BigDecimal gananciaUnidad, BigDecimal subtotal) {
         return new PedidoProductoEntity(id, producto, cantidad, pedido, precioVenta, gananciaUnidad, subtotal);
     }
 
@@ -56,7 +56,7 @@ public final class PedidoProductoEntity {
     }
 
     public PedidoProductoEntity setProducto(ProductoEntity producto) {
-        this.producto = UtilObjeto.getInstance().obtenerValorDefecto(producto, ProductoEntity.DEFAULT_OBJECT);
+        this.producto = UtilObjeto.getInstance().obtenerValorDefecto(producto, null);
         return this;
     }
 
@@ -74,7 +74,7 @@ public final class PedidoProductoEntity {
     }
 
     public PedidoProductoEntity setPedido(PedidoEntity pedido) {
-        this.pedido = UtilObjeto.getInstance().obtenerValorDefecto(pedido, PedidoEntity.DEFAULT_OBJECT);
+        this.pedido = UtilObjeto.getInstance().obtenerValorDefecto(pedido, null);
         return this;
     }
 

@@ -6,7 +6,6 @@ public final class UtilTexto {
 	public static final String VACIO = "";
 
 	private UtilTexto() {
-		
 	}
 
 	public static UtilTexto getInstance() {
@@ -29,7 +28,8 @@ public final class UtilTexto {
 		return VACIO;
 	}
 
-	public String quitarEspacioBlancoInicioFin(final String valor) {
+	// Método corregido con nombre plural (como se usó en clase)
+	public String quitarEspaciosBlancoInicioFin(final String valor) {
 		return obtenerValorDefecto(valor).trim();
 	}
 }

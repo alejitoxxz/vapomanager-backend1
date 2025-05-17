@@ -25,7 +25,7 @@ public final class ProveedorDTO {
         setNombreEmpresa(UtilTexto.getInstance().obtenerValorDefecto());
         setConfirmacionTelefono(false);
         setConfirmacionCorreo(false);
-        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(correoElectronico));
+        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
         setEstadoCuenta(false);
         setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setCiudad(CiudadDTO.DEFAULT_OBJECT);
@@ -35,7 +35,7 @@ public final class ProveedorDTO {
     }
 
     public static ProveedorDTO obtenerValorDefecto(final ProveedorDTO proveedor) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(proveedor, ProveedorDTO.DEFAULT_OBJECT);
+        return UtilObjeto.getInstance().obtenerValorDefecto(proveedor, DEFAULT_OBJECT);
     }
 
     public UUID getId() {
@@ -52,7 +52,7 @@ public final class ProveedorDTO {
     }
 
     public ProveedorDTO setNombreEmpresa(String nombreEmpresa) {
-        this.nombreEmpresa = UtilTexto.getInstance().obtenerValorDefecto(nombreEmpresa);
+        this.nombreEmpresa = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombreEmpresa);
         return this;
     }
 
@@ -97,7 +97,7 @@ public final class ProveedorDTO {
     }
 
     public ProveedorDTO setDireccion(String direccion) {
-        this.direccion = UtilTexto.getInstance().obtenerValorDefecto(direccion);
+        this.direccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(direccion);
         return this;
     }
 
@@ -115,7 +115,7 @@ public final class ProveedorDTO {
     }
 
     public ProveedorDTO setDescripcionDireccion(String descripcionDireccion) {
-        this.descripcionDireccion = UtilTexto.getInstance().obtenerValorDefecto(descripcionDireccion);
+        this.descripcionDireccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(descripcionDireccion);
         return this;
     }
 

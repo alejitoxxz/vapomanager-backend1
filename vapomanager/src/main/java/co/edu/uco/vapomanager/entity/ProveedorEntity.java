@@ -25,12 +25,12 @@ public final class ProveedorEntity {
         setNombreEmpresa(UtilTexto.getInstance().obtenerValorDefecto());
         setConfirmacionTelefono(false);
         setConfirmacionCorreo(false);
-        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(correoElectronico));
+        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
         setEstadoCuenta(false);
         setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
-        setCiudad(CiudadEntity.DEFAULT_OBJECT);
+        setCiudad(new CiudadEntity());
         setDescripcionDireccion(UtilTexto.getInstance().obtenerValorDefecto());
-        setTipoDocumento(TipoDocumentoEntity.DEFAULT_OBJECT);
+        setTipoDocumento(new TipoDocumentoEntity());
         setNumeroDocumento(0);
     }
 
@@ -59,6 +59,10 @@ public final class ProveedorEntity {
                 estadoCuenta, direccion, ciudad, descripcionDireccion, tipoDocumento, numeroDocumento);
     }
 
+    public static ProveedorEntity obtenerValorDefecto(final ProveedorEntity proveedor) {
+        return UtilObjeto.getInstance().obtenerValorDefecto(proveedor, DEFAULT_OBJECT);
+    }
+
     public UUID getId() {
         return id;
     }
@@ -73,7 +77,7 @@ public final class ProveedorEntity {
     }
 
     public ProveedorEntity setNombreEmpresa(String nombreEmpresa) {
-        this.nombreEmpresa = UtilTexto.getInstance().obtenerValorDefecto(nombreEmpresa);
+        this.nombreEmpresa = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombreEmpresa);
         return this;
     }
 
@@ -118,7 +122,7 @@ public final class ProveedorEntity {
     }
 
     public ProveedorEntity setDireccion(String direccion) {
-        this.direccion = UtilTexto.getInstance().obtenerValorDefecto(direccion);
+        this.direccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(direccion);
         return this;
     }
 
@@ -127,7 +131,7 @@ public final class ProveedorEntity {
     }
 
     public ProveedorEntity setCiudad(CiudadEntity ciudad) {
-        this.ciudad = UtilObjeto.getInstance().obtenerValorDefecto(ciudad, CiudadEntity.DEFAULT_OBJECT);
+        this.ciudad = UtilObjeto.getInstance().obtenerValorDefecto(ciudad, new CiudadEntity());
         return this;
     }
 
@@ -136,7 +140,7 @@ public final class ProveedorEntity {
     }
 
     public ProveedorEntity setDescripcionDireccion(String descripcionDireccion) {
-        this.descripcionDireccion = UtilTexto.getInstance().obtenerValorDefecto(descripcionDireccion);
+        this.descripcionDireccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(descripcionDireccion);
         return this;
     }
 
@@ -145,7 +149,7 @@ public final class ProveedorEntity {
     }
 
     public ProveedorEntity setTipoDocumento(TipoDocumentoEntity tipoDocumento) {
-        this.tipoDocumento = UtilObjeto.getInstance().obtenerValorDefecto(tipoDocumento, TipoDocumentoEntity.DEFAULT_OBJECT);
+        this.tipoDocumento = UtilObjeto.getInstance().obtenerValorDefecto(tipoDocumento, new TipoDocumentoEntity());
         return this;
     }
 

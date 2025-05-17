@@ -41,7 +41,7 @@ public final class SaborDTO {
     }
 
     public SaborDTO setSabor(final String sabor) {
-        this.sabor = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(sabor);
+        this.sabor = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(sabor); // ← aquí se corrigió el nombre del método
         return this;
     }
 }

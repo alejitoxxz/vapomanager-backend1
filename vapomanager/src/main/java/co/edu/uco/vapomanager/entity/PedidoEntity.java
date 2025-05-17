@@ -11,8 +11,6 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 
 public final class PedidoEntity {
 
-    public static final PedidoEntity DEFAULT_OBJECT = new PedidoEntity();
-
     private UUID id;
     private String numeroPedido;
     private ClienteEntity cliente;
@@ -23,7 +21,7 @@ public final class PedidoEntity {
     public PedidoEntity() {
         setId(UtilUUID.obtenerValorDefecto());
         setNumeroPedido(UtilTexto.getInstance().obtenerValorDefecto());
-        setCliente(ClienteEntity.DEFAULT_OBJECT);
+        setCliente(new ClienteEntity());  // Nuevo ClienteEntity vacío
         setFechaPedido(UtilFecha.obtenerFechaHoraActualZona());
         setValorTotalPedido(BigDecimal.ZERO);
         setGananciaPedido(BigDecimal.ZERO);
@@ -56,7 +54,7 @@ public final class PedidoEntity {
     }
 
     public PedidoEntity setNumeroPedido(String numeroPedido) {
-        this.numeroPedido = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(numeroPedido);
+        this.numeroPedido = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(numeroPedido);
         return this;
     }
 
@@ -65,7 +63,8 @@ public final class PedidoEntity {
     }
 
     public PedidoEntity setCliente(ClienteEntity cliente) {
-        this.cliente = UtilObjeto.getInstance().obtenerValorDefecto(cliente, ClienteEntity.DEFAULT_OBJECT);
+        // Evitar cliente nulo
+        this.cliente = cliente != null ? cliente : new ClienteEntity();
         return this;
     }
 

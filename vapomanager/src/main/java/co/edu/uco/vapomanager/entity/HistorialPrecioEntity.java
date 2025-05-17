@@ -20,16 +20,16 @@ public final class HistorialPrecioEntity {
     private ZonedDateTime fechaHasta;
 
     public HistorialPrecioEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setProveedorProducto(UtilUUID.obtenerValorDefecto());
-        setCantidadComprada(BigDecimal.ZERO);
-        setPrecioUnidad(BigDecimal.ZERO);
+        setId(UtilUUID.obtenerValorDefecto(null));
+        setProveedorProducto(UtilUUID.obtenerValorDefecto(null));
+        setCantidadComprada(UtilBigDecimal.obtenerValorDefecto(null));
+        setPrecioUnidad(UtilBigDecimal.obtenerValorDefecto(null));
         setFechaDesde(UtilFecha.obtenerFechaHoraActualZona());
         setFechaHasta(UtilFecha.obtenerFechaHoraActualZona());
     }
 
     public HistorialPrecioEntity(UUID id, UUID proveedorProducto, BigDecimal cantidadComprada,
-                                  BigDecimal precioUnidad, ZonedDateTime fechaDesde, ZonedDateTime fechaHasta) {
+                                BigDecimal precioUnidad, ZonedDateTime fechaDesde, ZonedDateTime fechaHasta) {
         setId(id);
         setProveedorProducto(proveedorProducto);
         setCantidadComprada(cantidadComprada);
@@ -47,53 +47,47 @@ public final class HistorialPrecioEntity {
         return id;
     }
 
-    public HistorialPrecioEntity setId(UUID id) {
+    public void setId(UUID id) {
         this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
     }
 
     public UUID getProveedorProducto() {
         return proveedorProducto;
     }
 
-    public HistorialPrecioEntity setProveedorProducto(UUID proveedorProducto) {
+    public void setProveedorProducto(UUID proveedorProducto) {
         this.proveedorProducto = UtilUUID.obtenerValorDefecto(proveedorProducto);
-        return this;
     }
 
     public BigDecimal getCantidadComprada() {
         return cantidadComprada;
     }
 
-    public HistorialPrecioEntity setCantidadComprada(BigDecimal cantidadComprada) {
+    public void setCantidadComprada(BigDecimal cantidadComprada) {
         this.cantidadComprada = UtilBigDecimal.obtenerValorDefecto(cantidadComprada);
-        return this;
     }
 
     public BigDecimal getPrecioUnidad() {
         return precioUnidad;
     }
 
-    public HistorialPrecioEntity setPrecioUnidad(BigDecimal precioUnidad) {
+    public void setPrecioUnidad(BigDecimal precioUnidad) {
         this.precioUnidad = UtilBigDecimal.obtenerValorDefecto(precioUnidad);
-        return this;
     }
 
     public ZonedDateTime getFechaDesde() {
         return fechaDesde;
     }
 
-    public HistorialPrecioEntity setFechaDesde(ZonedDateTime fechaDesde) {
+    public void setFechaDesde(ZonedDateTime fechaDesde) {
         this.fechaDesde = UtilFecha.obtenerValorDefecto(fechaDesde);
-        return this;
     }
 
     public ZonedDateTime getFechaHasta() {
         return fechaHasta;
     }
 
-    public HistorialPrecioEntity setFechaHasta(ZonedDateTime fechaHasta) {
+    public void setFechaHasta(ZonedDateTime fechaHasta) {
         this.fechaHasta = UtilFecha.obtenerValorDefecto(fechaHasta);
-        return this;
     }
 }

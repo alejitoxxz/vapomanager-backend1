@@ -2,14 +2,31 @@ package co.edu.uco.vapomanager.dto;
 
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilNumero;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
-public class EdicionDTO {
+public final class EdicionDTO {
 
     private UUID id;
     private int edicion;
 
     public static final EdicionDTO DEFAULT_OBJECT = new EdicionDTO();
+
+    public EdicionDTO() {
+        setId(UtilUUID.obtenerValorDefecto());
+        setEdicion(UtilNumero.obtenerValorDefecto(0));
+    }
+
+    public EdicionDTO(final UUID id) {
+        setId(id);
+        setEdicion(UtilNumero.obtenerValorDefecto(0));
+    }
+
+    public EdicionDTO(final UUID id, final int edicion) {
+        setId(id);
+        setEdicion(edicion);
+    }
 
     public static EdicionDTO obtenerValorDefecto(final EdicionDTO edicion) {
         return UtilObjeto.getInstance().obtenerValorDefecto(edicion, DEFAULT_OBJECT);

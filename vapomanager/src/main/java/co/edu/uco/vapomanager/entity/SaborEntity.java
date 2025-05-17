@@ -40,7 +40,7 @@ public final class SaborEntity {
     }
 
     public SaborEntity setSabor(String sabor) {
-        this.sabor = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(sabor);
+        this.sabor = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(sabor); // ← aquí se corrigió el nombre del método
         return this;
     }
 }

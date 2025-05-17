@@ -21,6 +21,7 @@ public final class ProductoEntity {
     private CategoriaEntity categoria;
     private EstadoProductoEntity estadoProducto;
 
+    // Constructores
     public ProductoEntity() {
         setId(UtilUUID.obtenerValorDefecto());
         setMarca(MarcaEntity.DEFAULT_OBJECT);
@@ -32,8 +33,9 @@ public final class ProductoEntity {
         setEstadoProducto(EstadoProductoEntity.DEFAULT_OBJECT);
     }
 
-    public ProductoEntity(UUID id, MarcaEntity marca, SaborEntity sabor, EdicionEntity edicion, BigDecimal precioCompra, 
-                          String descripcion, CategoriaEntity categoria, EstadoProductoEntity estadoProducto) {
+    public ProductoEntity(UUID id, MarcaEntity marca, SaborEntity sabor, EdicionEntity edicion, 
+                          BigDecimal precioCompra, String descripcion, CategoriaEntity categoria, 
+                          EstadoProductoEntity estadoProducto) {
         setId(id);
         setMarca(marca);
         setSabor(sabor);
@@ -44,12 +46,14 @@ public final class ProductoEntity {
         setEstadoProducto(estadoProducto);
     }
 
+    // Método de fábrica
     public static ProductoEntity create(UUID id, MarcaEntity marca, SaborEntity sabor, EdicionEntity edicion, 
                                         BigDecimal precioCompra, String descripcion, CategoriaEntity categoria, 
                                         EstadoProductoEntity estadoProducto) {
         return new ProductoEntity(id, marca, sabor, edicion, precioCompra, descripcion, categoria, estadoProducto);
     }
 
+    // Getters y Setters
     public UUID getId() {
         return id;
     }

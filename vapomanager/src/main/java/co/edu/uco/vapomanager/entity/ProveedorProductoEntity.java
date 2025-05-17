@@ -3,6 +3,7 @@ package co.edu.uco.vapomanager.entity;
 import java.util.UUID;
 
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 
 public final class ProveedorProductoEntity {
 
@@ -26,6 +27,10 @@ public final class ProveedorProductoEntity {
 
     public static ProveedorProductoEntity create(UUID id, UUID proveedor, UUID producto) {
         return new ProveedorProductoEntity(id, proveedor, producto);
+    }
+
+    public static ProveedorProductoEntity obtenerValorDefecto(final ProveedorProductoEntity entity) {
+        return UtilObjeto.getInstance().obtenerValorDefecto(entity, DEFAULT_OBJECT);
     }
 
     public UUID getId() {

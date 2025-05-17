@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilFecha;
 
 public final class PedidoDTO {
 
@@ -16,6 +19,24 @@ public final class PedidoDTO {
     private ZonedDateTime fechaPedido;
     private BigDecimal valorTotalPedido;
     private BigDecimal gananciaPedido;
+
+    public PedidoDTO() {
+        setId(UtilUUID.obtenerValorDefecto());
+        setNumeroPedido(UtilTexto.getInstance().obtenerValorDefecto());
+        setCliente(ClienteDTO.DEFAULT_OBJECT);
+        setFechaPedido(UtilFecha.obtenerFechaHoraActualZona());
+        setValorTotalPedido(BigDecimal.ZERO);
+        setGananciaPedido(BigDecimal.ZERO);
+    }
+
+    public PedidoDTO(UUID id, String numeroPedido, ClienteDTO cliente, ZonedDateTime fechaPedido, BigDecimal valorTotalPedido, BigDecimal gananciaPedido) {
+        setId(id);
+        setNumeroPedido(numeroPedido);
+        setCliente(cliente);
+        setFechaPedido(fechaPedido);
+        setValorTotalPedido(valorTotalPedido);
+        setGananciaPedido(gananciaPedido);
+    }
 
     public static PedidoDTO obtenerValorDefecto(final PedidoDTO pedido) {
         return UtilObjeto.getInstance().obtenerValorDefecto(pedido, DEFAULT_OBJECT);
@@ -35,7 +56,7 @@ public final class PedidoDTO {
     }
 
     public PedidoDTO setNumeroPedido(String numeroPedido) {
-        this.numeroPedido = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(numeroPedido);
+        this.numeroPedido = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(numeroPedido);
         return this;
     }
 

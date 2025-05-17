@@ -2,7 +2,6 @@ package co.edu.uco.vapomanager.dto;
 
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
@@ -18,13 +17,18 @@ public final class AdministradorDTO {
         setCorreo(UtilTexto.getInstance().obtenerValorDefecto());
     }
 
+    public AdministradorDTO(final UUID id) {
+        setId(id);
+        setCorreo(UtilTexto.getInstance().obtenerValorDefecto());
+    }
+
     public AdministradorDTO(final UUID id, final String correo) {
         setId(id);
         setCorreo(correo);
     }
 
-    public static AdministradorDTO obtenerValorDefecto(final AdministradorDTO administrador) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(administrador, DEFAULT_OBJECT);
+    public static AdministradorDTO obtenerValorDefecto() {
+        return DEFAULT_OBJECT;
     }
 
     public UUID getId() {
@@ -41,7 +45,7 @@ public final class AdministradorDTO {
     }
 
     public AdministradorDTO setCorreo(final String correo) {
-        this.correo = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(correo);
+        this.correo = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(correo);
         return this;
     }
 }

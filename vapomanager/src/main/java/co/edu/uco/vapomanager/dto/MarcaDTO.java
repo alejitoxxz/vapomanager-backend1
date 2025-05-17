@@ -41,7 +41,7 @@ public final class MarcaDTO {
     }
 
     public MarcaDTO setMarca(final String marca) {
-        this.marca = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(marca);
+        this.marca = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(marca);
         return this;
     }
 }

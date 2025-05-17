@@ -2,7 +2,6 @@ package co.edu.uco.vapomanager.dto;
 
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
@@ -20,14 +19,20 @@ public final class CategoriaDTO {
         setDescripcion(UtilTexto.getInstance().obtenerValorDefecto());
     }
 
+    public CategoriaDTO(final UUID id) {
+        setId(id);
+        setNombreCategoria(UtilTexto.getInstance().obtenerValorDefecto());
+        setDescripcion(UtilTexto.getInstance().obtenerValorDefecto());
+    }
+
     public CategoriaDTO(final UUID id, final String nombreCategoria, final String descripcion) {
         setId(id);
         setNombreCategoria(nombreCategoria);
         setDescripcion(descripcion);
     }
 
-    public static CategoriaDTO obtenerValorDefecto(final CategoriaDTO dto) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(dto, DEFAULT_OBJECT);
+    public static CategoriaDTO obtenerValorDefecto() {
+        return DEFAULT_OBJECT;
     }
 
     public UUID getId() {
@@ -44,7 +49,7 @@ public final class CategoriaDTO {
     }
 
     public CategoriaDTO setNombreCategoria(final String nombreCategoria) {
-        this.nombreCategoria = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(nombreCategoria);
+        this.nombreCategoria = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombreCategoria);
         return this;
     }
 
@@ -53,7 +58,7 @@ public final class CategoriaDTO {
     }
 
     public CategoriaDTO setDescripcion(final String descripcion) {
-        this.descripcion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(descripcion);
+        this.descripcion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(descripcion);
         return this;
     }
 }

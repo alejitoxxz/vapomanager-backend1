@@ -18,10 +18,21 @@ public final class ProductoDTO {
     private BigDecimal precioVenta;
     private BigDecimal ganancia;
 
+    // Constructores
+    public ProductoDTO() {
+        setId(UtilUUID.obtenerValorDefecto());
+        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
+        setDescripcion(UtilTexto.getInstance().obtenerValorDefecto());
+        setPrecioCompra(BigDecimal.ZERO);
+        setPrecioVenta(BigDecimal.ZERO);
+        setGanancia(BigDecimal.ZERO);
+    }
+
     public static ProductoDTO obtenerValorDefecto(final ProductoDTO dto) {
         return UtilObjeto.getInstance().obtenerValorDefecto(dto, DEFAULT_OBJECT);
     }
 
+    // Getters y Setters
     public UUID getId() {
         return id;
     }
@@ -36,7 +47,7 @@ public final class ProductoDTO {
     }
 
     public ProductoDTO setNombre(String nombre) {
-        this.nombre = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(nombre);
+        this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
         return this;
     }
 
@@ -45,7 +56,7 @@ public final class ProductoDTO {
     }
 
     public ProductoDTO setDescripcion(String descripcion) {
-        this.descripcion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(descripcion);
+        this.descripcion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(descripcion);
         return this;
     }
 

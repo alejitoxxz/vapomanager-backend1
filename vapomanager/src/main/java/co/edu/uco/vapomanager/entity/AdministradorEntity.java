@@ -17,30 +17,33 @@ public final class AdministradorEntity {
         setCorreo(UtilTexto.getInstance().obtenerValorDefecto());
     }
 
-    public AdministradorEntity(UUID id, String correo) {
+    public AdministradorEntity(final UUID id) {
+        setId(id);
+        setCorreo(UtilTexto.getInstance().obtenerValorDefecto());
+    }
+
+    public AdministradorEntity(final UUID id, final String correo) {
         setId(id);
         setCorreo(correo);
     }
 
-    public static AdministradorEntity create(UUID id, String correo) {
-        return new AdministradorEntity(id, correo);
+    public static AdministradorEntity obtenerValorDefecto() {
+        return DEFAULT_OBJECT;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public AdministradorEntity setId(UUID id) {
+    public void setId(final UUID id) {
         this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
     }
 
     public String getCorreo() {
         return correo;
     }
 
-    public AdministradorEntity setCorreo(String correo) {
-        this.correo = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(correo);
-        return this;
+    public void setCorreo(final String correo) {
+        this.correo = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(correo);
     }
 }
