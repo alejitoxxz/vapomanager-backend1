@@ -1,51 +1,50 @@
 package co.edu.uco.vapomanager.entity;
 
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
 import java.util.UUID;
 
-public class DepartamentoEntity {
+public final class DepartamentoEntity {
+
+    public static final DepartamentoEntity DEFAULT_OBJECT = new DepartamentoEntity();
 
     private UUID id;
     private String nombre;
 
     public DepartamentoEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
+        this(UtilUUID.obtenerValorDefecto(), UtilTexto.getInstance().obtenerValorDefecto());
     }
 
-    public DepartamentoEntity(UUID id) {
-        setId(id);
-        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-    }
-
-    public DepartamentoEntity(UUID id, String nombre) {
+    private DepartamentoEntity(UUID id, String nombre) {
         setId(id);
         setNombre(nombre);
     }
 
-    public static DepartamentoEntity obtenerValorDefecto() {
-        return new DepartamentoEntity();
+    public static DepartamentoEntity create(UUID id, String nombre) {
+        return new DepartamentoEntity(id, nombre);
     }
 
-    public static DepartamentoEntity obtenerValorDefecto(final DepartamentoEntity departamento) {
-        return (departamento == null) ? obtenerValorDefecto() : departamento;
+    public static DepartamentoEntity obtenerValorDefecto(final DepartamentoEntity entity) {
+        return UtilObjeto.getInstance().obtenerValorDefecto(entity, DEFAULT_OBJECT);
     }
 
     public UUID getId() {
         return id;
     }
 
-    public void setId(final UUID id) {
+    public DepartamentoEntity setId(final UUID id) {
         this.id = UtilUUID.obtenerValorDefecto(id);
+        return this;
     }
 
     public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(final String nombre) {
+    public DepartamentoEntity setNombre(final String nombre) {
         this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
+        return this;
     }
 }

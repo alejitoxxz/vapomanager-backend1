@@ -1,0 +1,1 @@
+package co.edu.uco.vapomanager.data.dao.entity.administrador.postgresql;

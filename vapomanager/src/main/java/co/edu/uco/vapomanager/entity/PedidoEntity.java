@@ -21,7 +21,7 @@ public final class PedidoEntity {
     public PedidoEntity() {
         setId(UtilUUID.obtenerValorDefecto());
         setNumeroPedido(UtilTexto.getInstance().obtenerValorDefecto());
-        setCliente(new ClienteEntity());  // Nuevo ClienteEntity vacío
+        setCliente(new ClienteEntity());  
         setFechaPedido(UtilFecha.obtenerFechaHoraActualZona());
         setValorTotalPedido(BigDecimal.ZERO);
         setGananciaPedido(BigDecimal.ZERO);
@@ -63,7 +63,6 @@ public final class PedidoEntity {
     }
 
     public PedidoEntity setCliente(ClienteEntity cliente) {
-        // Evitar cliente nulo
         this.cliente = cliente != null ? cliente : new ClienteEntity();
         return this;
     }
