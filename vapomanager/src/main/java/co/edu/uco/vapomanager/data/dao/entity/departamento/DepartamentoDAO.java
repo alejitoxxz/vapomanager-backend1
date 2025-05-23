@@ -9,6 +9,6 @@ import co.edu.uco.vapomanager.entity.DepartamentoEntity;
 import java.util.UUID;
 
 public interface DepartamentoDAO
-        extends CreateDAO<DepartamentoEntity>, ReadDAO<DepartamentoEntity, UUID>, UpdateDAO<DepartamentoEntity, UUID>, DeleteDAO<UUID> {
+        extends ReadDAO<DepartamentoEntity, UUID> {
 
 }

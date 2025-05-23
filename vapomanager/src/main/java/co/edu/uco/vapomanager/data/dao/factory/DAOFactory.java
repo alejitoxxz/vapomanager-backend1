@@ -1,6 +1,6 @@
 package co.edu.uco.vapomanager.data.dao.factory;
 
-import co.edu.uco.vapomanager.crosscutting.excepciones.OnlineTestException;
+import co.edu.uco.vapomanager.crosscutting.excepciones.VapomanagerException;
 import co.edu.uco.vapomanager.data.dao.entity.ciudad.CiudadDAO;
 import co.edu.uco.vapomanager.data.dao.entity.departamento.DepartamentoDAO;
 import co.edu.uco.vapomanager.data.dao.factory.postgresql.PostgreSQLDAOFactory;
@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 public abstract class DAOFactory {
 
-    public static DAOFactory getFactory(Factory factory, DataSource dataSource) throws OnlineTestException {
+    public static DAOFactory getFactory(Factory factory, DataSource dataSource) throws VapomanagerException {
         switch (factory) {
             case POSTGRESQL:
                 return new PostgreSQLDAOFactory(dataSource);
@@ -18,12 +18,12 @@ public abstract class DAOFactory {
         }
     }
 
-    protected abstract void abrirConexion() throws OnlineTestException;
-    public abstract void iniciarTransaccion() throws OnlineTestException;
-    public abstract void confirmarTransaccion() throws OnlineTestException;
-    public abstract void cancelarTransaccion() throws OnlineTestException;
-    public abstract void cerrarConexion() throws OnlineTestException;
+    protected abstract void abrirConexion() throws VapomanagerException;
+    public abstract void iniciarTransaccion() throws VapomanagerException;
+    public abstract void confirmarTransaccion() throws VapomanagerException;
+    public abstract void cancelarTransaccion() throws VapomanagerException;
+    public abstract void cerrarConexion() throws VapomanagerException;
 
-    public abstract DepartamentoDAO getDepartamentoDAO() throws OnlineTestException;
-    public abstract CiudadDAO getCiudadDAO() throws OnlineTestException;
+    public abstract DepartamentoDAO getDepartamentoDAO() throws VapomanagerException;
+    public abstract CiudadDAO getCiudadDAO() throws VapomanagerException;
 }

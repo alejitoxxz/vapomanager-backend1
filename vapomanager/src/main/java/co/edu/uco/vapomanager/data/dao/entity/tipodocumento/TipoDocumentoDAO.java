@@ -12,5 +12,5 @@ import java.util.List;
 
 
 public interface TipoDocumentoDAO extends 
-CreateDAO<TipoDocumentoEntity>,ReadDAO<TipoDocumentoEntity, UUID>,UpdateDAO<TipoDocumentoEntity, UUID>,DeleteDAO<UUID> {
+ReadDAO<TipoDocumentoEntity, UUID> {
 }

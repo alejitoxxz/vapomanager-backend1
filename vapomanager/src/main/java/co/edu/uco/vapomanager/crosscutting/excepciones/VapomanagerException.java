@@ -3,7 +3,7 @@ package co.edu.uco.vapomanager.crosscutting.excepciones;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 
-public class OnlineTestException extends Exception {
+public class VapomanagerException extends Exception {
 
 	
 	private static final long serialVersionUID = 172685827469497747L;
@@ -11,7 +11,7 @@ public class OnlineTestException extends Exception {
 	private String mensajeUsuario;
 	private LayerException capa;
 
-	protected OnlineTestException(String mensajeUsuario, String mensajeTecnico, Exception exceptionRaiz, LayerException capa) {
+	protected VapomanagerException(String mensajeUsuario, String mensajeTecnico, Exception exceptionRaiz, LayerException capa) {
 		super(mensajeTecnico, exceptionRaiz);
 		setMensajeUsuario(mensajeUsuario);
 		setCapa(capa);

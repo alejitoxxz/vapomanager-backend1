@@ -9,6 +9,6 @@ import co.edu.uco.vapomanager.entity.CiudadEntity;
 import java.util.UUID;
 
 public interface CiudadDAO
-        extends CreateDAO<CiudadEntity>, ReadDAO<CiudadEntity, UUID>, UpdateDAO<CiudadEntity, UUID>, DeleteDAO<UUID> {
+        extends  ReadDAO<CiudadEntity, UUID> {
 
 }
