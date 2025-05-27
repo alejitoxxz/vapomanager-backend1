@@ -1,53 +1,50 @@
 package co.edu.uco.vapomanager.dto;
 
+import java.util.UUID;
+
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
-import java.util.UUID;
+public final class DepartamentoDTO {
 
-public class DepartamentoDTO {
+	private UUID id;
+	private String nombre;
 
-    private UUID id;
-    private String nombre;
+	public DepartamentoDTO() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setNombre(UtilTexto.getInstance().obtenerValorDefecto());
+	}
 
-    public DepartamentoDTO() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-    }
+	public DepartamentoDTO(final UUID id) {
+		setId(id);
+		setNombre(UtilTexto.getInstance().obtenerValorDefecto());
+	}
 
-    public DepartamentoDTO(UUID id) {
-        setId(id);
-        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-    }
+	public DepartamentoDTO(final UUID id, final String nombre) {
+		setId(id);
+		setNombre(nombre);
+	}
 
-    public DepartamentoDTO(UUID id, String nombre) {
-        setId(id);
-        setNombre(nombre);
-    }
+	public static DepartamentoDTO obtenerValorDefecto(final DepartamentoDTO departamento) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(departamento, new DepartamentoDTO());
+	}
 
-    public static DepartamentoDTO obtenerValorDefecto() {
-        return new DepartamentoDTO();
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public static DepartamentoDTO obtenerValorDefecto(final DepartamentoDTO departamento) {
-        return (departamento == null) ? obtenerValorDefecto() : departamento;
-    }
+	public DepartamentoDTO setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+		return this;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public DepartamentoDTO setId(final UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public DepartamentoDTO setNombre(final String nombre) {
-        this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
-        return this;
-    }
+	public DepartamentoDTO setNombre(final String nombre) {
+		this.nombre = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(nombre);
+		return this;
+	}
 }

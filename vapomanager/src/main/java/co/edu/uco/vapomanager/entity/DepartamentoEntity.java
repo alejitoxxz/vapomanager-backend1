@@ -1,55 +1,52 @@
 package co.edu.uco.vapomanager.entity;
 
+import java.util.UUID;
+
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
-import java.util.UUID;
-
 public final class DepartamentoEntity {
 
-    public static final DepartamentoEntity DEFAULT_OBJECT = new DepartamentoEntity();
+	private UUID id;
+	private String nombre;
 
-    private UUID id;
-    private String nombre;
+	public DepartamentoEntity() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setNombre(UtilTexto.getInstance().obtenerValorDefecto());
+	}
 
-    public DepartamentoEntity() {
-        this(UtilUUID.obtenerValorDefecto(), UtilTexto.getInstance().obtenerValorDefecto());
-    }
+	public DepartamentoEntity(final UUID id) {
+		setId(id);
+		setNombre(UtilTexto.getInstance().obtenerValorDefecto());
+	}
 
-    private DepartamentoEntity(UUID id, String nombre) {
-        setId(id);
-        setNombre(nombre);
-    }
+	public DepartamentoEntity(final UUID id, final String nombre) {
+		setId(id);
+		setNombre(nombre);
+	}
 
-    public static DepartamentoEntity create(UUID id, String nombre) {
-        return new DepartamentoEntity(id, nombre);
-    }
+	public static DepartamentoEntity obtenerValorDefecto(final DepartamentoEntity departamento) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(departamento, new DepartamentoEntity());
+	}
 
-    // Nuevo método sin parámetros para mantener consistencia con PaisEntity
-    public static DepartamentoEntity obtenerValorDefecto() {
-        return DEFAULT_OBJECT;
-    }
+	public static DepartamentoEntity obtenerValorDefecto() {
+		return new DepartamentoEntity();
+	}
 
-    public static DepartamentoEntity obtenerValorDefecto(final DepartamentoEntity entity) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(entity, DEFAULT_OBJECT);
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public void setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+	}
 
-    public DepartamentoEntity setId(final UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public DepartamentoEntity setNombre(final String nombre) {
-        this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
-        return this;
-    }
+	public void setNombre(final String nombre) {
+		this.nombre = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(nombre);
+	}
 }

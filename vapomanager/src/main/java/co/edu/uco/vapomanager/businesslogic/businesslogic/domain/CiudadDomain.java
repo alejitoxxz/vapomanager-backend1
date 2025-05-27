@@ -47,7 +47,7 @@ public final class CiudadDomain {
     }
 
     public CiudadDomain setNombre(final String nombre) {
-        this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
+        this.nombre = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(nombre);
         return this;
     }
 

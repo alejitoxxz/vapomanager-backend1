@@ -3,64 +3,81 @@ package co.edu.uco.vapomanager.dto;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilFecha;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
 public final class InventarioDTO {
 
-    public static final InventarioDTO DEFAULT_OBJECT = new InventarioDTO();
+	private UUID id;
+	private int cantidadDisponible;
+	private int cantidadMinima;
+	private ZonedDateTime fechaIngreso;
+	private ProductoDTO producto;
 
-    private UUID id;
-    private int cantidadDisponible;
-    private int cantidadMinima;
-    private ZonedDateTime fechaIngreso;
-    private ProductoDTO producto;
+	public InventarioDTO() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setCantidadDisponible(0);
+		setCantidadMinima(0);
+		setFechaIngreso(UtilFecha.obtenerFechaHoraActualZona());
+		setProducto(new ProductoDTO());
+	}
 
-    public static InventarioDTO obtenerValorDefecto(final InventarioDTO inventario) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(inventario, DEFAULT_OBJECT);
-    }
+	public InventarioDTO(final UUID id, final int cantidadDisponible, final int cantidadMinima,
+	                     final ZonedDateTime fechaIngreso, final ProductoDTO producto) {
+		setId(id);
+		setCantidadDisponible(cantidadDisponible);
+		setCantidadMinima(cantidadMinima);
+		setFechaIngreso(fechaIngreso);
+		setProducto(producto);
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public static InventarioDTO obtenerValorDefecto(final InventarioDTO inventario) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(inventario, new InventarioDTO());
+	}
 
-    public InventarioDTO setId(UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public int getCantidadDisponible() {
-        return cantidadDisponible;
-    }
+	public InventarioDTO setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+		return this;
+	}
 
-    public InventarioDTO setCantidadDisponible(int cantidadDisponible) {
-        this.cantidadDisponible = cantidadDisponible;
-        return this;
-    }
+	public int getCantidadDisponible() {
+		return cantidadDisponible;
+	}
 
-    public int getCantidadMinima() {
-        return cantidadMinima;
-    }
+	public InventarioDTO setCantidadDisponible(final int cantidadDisponible) {
+		this.cantidadDisponible = cantidadDisponible;
+		return this;
+	}
 
-    public InventarioDTO setCantidadMinima(int cantidadMinima) {
-        this.cantidadMinima = cantidadMinima;
-        return this;
-    }
+	public int getCantidadMinima() {
+		return cantidadMinima;
+	}
 
-    public ZonedDateTime getFechaIngreso() {
-        return fechaIngreso;
-    }
+	public InventarioDTO setCantidadMinima(final int cantidadMinima) {
+		this.cantidadMinima = cantidadMinima;
+		return this;
+	}
 
-    public InventarioDTO setFechaIngreso(ZonedDateTime fechaIngreso) {
-        this.fechaIngreso = UtilFecha.obtenerValorDefecto(fechaIngreso);
-        return this;
-    }
+	public ZonedDateTime getFechaIngreso() {
+		return fechaIngreso;
+	}
 
-    public ProductoDTO getProducto() {
-        return producto;
-    }
+	public InventarioDTO setFechaIngreso(final ZonedDateTime fechaIngreso) {
+		this.fechaIngreso = UtilFecha.obtenerValorDefecto(fechaIngreso);
+		return this;
+	}
 
-    public InventarioDTO setProducto(ProductoDTO producto) {
-        this.producto = UtilObjeto.getInstance().obtenerValorDefecto(producto, ProductoDTO.DEFAULT_OBJECT);
-        return this;
-    }
+	public ProductoDTO getProducto() {
+		return producto;
+	}
+
+	public InventarioDTO setProducto(final ProductoDTO producto) {
+		this.producto = ProductoDTO.obtenerValorDefecto(producto);
+		return this;
+	}
 }

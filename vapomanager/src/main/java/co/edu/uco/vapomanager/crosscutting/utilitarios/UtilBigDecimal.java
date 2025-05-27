@@ -4,27 +4,31 @@ import java.math.BigDecimal;
 
 public final class UtilBigDecimal {
 
-    private UtilBigDecimal() {
-        super();
-    }
+	private UtilBigDecimal() {
+		super();
+	}
 
-    public static BigDecimal obtenerValorDefecto(final BigDecimal valor) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(valor, BigDecimal.ZERO);
-    }
+	public static BigDecimal obtenerValorDefecto(final BigDecimal valor) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(valor, BigDecimal.ZERO);
+	}
 
-    public static boolean esMayorQueCero(final BigDecimal valor) {
-        return obtenerValorDefecto(valor).compareTo(BigDecimal.ZERO) > 0;
-    }
+	public static BigDecimal obtenerValorDefecto() {
+		return BigDecimal.ZERO;
+	}
 
-    public static boolean esNegativo(final BigDecimal valor) {
-        return obtenerValorDefecto(valor).compareTo(BigDecimal.ZERO) < 0;
-    }
+	public static boolean esMayorQueCero(final BigDecimal valor) {
+		return obtenerValorDefecto(valor).compareTo(BigDecimal.ZERO) > 0;
+	}
 
-    public static BigDecimal sumar(final BigDecimal a, final BigDecimal b) {
-        return obtenerValorDefecto(a).add(obtenerValorDefecto(b));
-    }
+	public static boolean esNegativo(final BigDecimal valor) {
+		return obtenerValorDefecto(valor).compareTo(BigDecimal.ZERO) < 0;
+	}
 
-    public static BigDecimal restar(final BigDecimal a, final BigDecimal b) {
-        return obtenerValorDefecto(a).subtract(obtenerValorDefecto(b));
-    }
+	public static BigDecimal sumar(final BigDecimal a, final BigDecimal b) {
+		return obtenerValorDefecto(a).add(obtenerValorDefecto(b));
+	}
+
+	public static BigDecimal restar(final BigDecimal a, final BigDecimal b) {
+		return obtenerValorDefecto(a).subtract(obtenerValorDefecto(b));
+	}
 }

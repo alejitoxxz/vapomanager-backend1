@@ -77,7 +77,7 @@ public final class ProveedorDomain {
     }
 
     public ProveedorDomain setNombreEmpresa(String nombreEmpresa) {
-        this.nombreEmpresa = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombreEmpresa);
+        this.nombreEmpresa = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(nombreEmpresa);
         return this;
     }
 
@@ -122,7 +122,7 @@ public final class ProveedorDomain {
     }
 
     public ProveedorDomain setDireccion(String direccion) {
-        this.direccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(direccion);
+        this.direccion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(direccion);
         return this;
     }
 
@@ -140,7 +140,7 @@ public final class ProveedorDomain {
     }
 
     public ProveedorDomain setDescripcionDireccion(String descripcionDireccion) {
-        this.descripcionDireccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(descripcionDireccion);
+        this.descripcionDireccion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(descripcionDireccion);
         return this;
     }
 

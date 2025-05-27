@@ -9,71 +9,74 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
 public final class InventarioEntity {
 
-    public static final InventarioEntity DEFAULT_OBJECT = new InventarioEntity();
+	private UUID id;
+	private int cantidadDisponible;
+	private int cantidadMinima;
+	private ZonedDateTime fechaIngreso;
+	private ProductoEntity producto;
 
-    private UUID id;
-    private int cantidadDisponible;
-    private int cantidadMinima;
-    private ZonedDateTime fechaIngreso;
-    private ProductoEntity producto;
+	public InventarioEntity() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setCantidadDisponible(0);
+		setCantidadMinima(0);
+		setFechaIngreso(UtilFecha.obtenerFechaHoraActualZona());
+		setProducto(new ProductoEntity());
+	}
 
-    public InventarioEntity() {
-        setId(UtilUUID.obtenerValorDefecto(null));
-        setCantidadDisponible(0);
-        setCantidadMinima(0);
-        setFechaIngreso(UtilFecha.obtenerFechaHoraActualZona()); 
-        setProducto(ProductoEntity.DEFAULT_OBJECT);
-    }
+	public InventarioEntity(final UUID id, final int cantidadDisponible, final int cantidadMinima,
+	                        final ZonedDateTime fechaIngreso, final ProductoEntity producto) {
+		setId(id);
+		setCantidadDisponible(cantidadDisponible);
+		setCantidadMinima(cantidadMinima);
+		setFechaIngreso(fechaIngreso);
+		setProducto(producto);
+	}
 
-    public InventarioEntity(UUID id, int cantidadDisponible, int cantidadMinima, ZonedDateTime fechaIngreso, ProductoEntity producto) {
-        setId(id);
-        setCantidadDisponible(cantidadDisponible);
-        setCantidadMinima(cantidadMinima);
-        setFechaIngreso(fechaIngreso);
-        setProducto(producto);
-    }
+	public static InventarioEntity obtenerValorDefecto(final InventarioEntity entity) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(entity, new InventarioEntity());
+	}
 
-    public static InventarioEntity create(UUID id, int cantidadDisponible, int cantidadMinima, ZonedDateTime fechaIngreso, ProductoEntity producto) {
-        return new InventarioEntity(id, cantidadDisponible, cantidadMinima, fechaIngreso, producto);
-    }
+	public static InventarioEntity obtenerValorDefecto() {
+		return new InventarioEntity();
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public void setId(UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-    }
+	public void setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+	}
 
-    public int getCantidadDisponible() {
-        return cantidadDisponible;
-    }
+	public int getCantidadDisponible() {
+		return cantidadDisponible;
+	}
 
-    public void setCantidadDisponible(int cantidadDisponible) {
-        this.cantidadDisponible = cantidadDisponible;
-    }
+	public void setCantidadDisponible(final int cantidadDisponible) {
+		this.cantidadDisponible = cantidadDisponible;
+	}
 
-    public int getCantidadMinima() {
-        return cantidadMinima;
-    }
+	public int getCantidadMinima() {
+		return cantidadMinima;
+	}
 
-    public void setCantidadMinima(int cantidadMinima) {
-        this.cantidadMinima = cantidadMinima;
-    }
+	public void setCantidadMinima(final int cantidadMinima) {
+		this.cantidadMinima = cantidadMinima;
+	}
 
-    public ZonedDateTime getFechaIngreso() {
-        return fechaIngreso;
-    }
+	public ZonedDateTime getFechaIngreso() {
+		return fechaIngreso;
+	}
 
-    public void setFechaIngreso(ZonedDateTime fechaIngreso) {
-        this.fechaIngreso = UtilFecha.obtenerValorDefecto(fechaIngreso);
-    }
+	public void setFechaIngreso(final ZonedDateTime fechaIngreso) {
+		this.fechaIngreso = UtilFecha.obtenerValorDefecto(fechaIngreso);
+	}
 
-    public ProductoEntity getProducto() {
-        return producto;
-    }
+	public ProductoEntity getProducto() {
+		return producto;
+	}
 
-    public void setProducto(ProductoEntity producto) {
-        this.producto = UtilObjeto.getInstance().obtenerValorDefecto(producto, ProductoEntity.DEFAULT_OBJECT);
-    }
+	public void setProducto(final ProductoEntity producto) {
+		this.producto = ProductoEntity.obtenerValorDefecto(producto);
+	}
 }

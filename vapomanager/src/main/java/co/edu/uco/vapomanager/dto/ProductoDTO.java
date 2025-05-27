@@ -3,87 +3,117 @@ package co.edu.uco.vapomanager.dto;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
+import co.edu.uco.vapomanager.dto.*;
 
 public final class ProductoDTO {
 
-    public static final ProductoDTO DEFAULT_OBJECT = new ProductoDTO();
+	private UUID id;
+	private MarcaDTO marca;
+	private SaborDTO sabor;
+	private EdicionDTO edicion;
+	private BigDecimal precioCompra;
+	private String descripcion;
+	private CategoriaDTO categoria;
+	private EstadoProductoDTO estadoProducto;
 
-    private UUID id;
-    private String nombre;
-    private String descripcion;
-    private BigDecimal precioCompra;
-    private BigDecimal precioVenta;
-    private BigDecimal ganancia;
+	public ProductoDTO() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setMarca(new MarcaDTO());
+		setSabor(new SaborDTO());
+		setEdicion(new EdicionDTO());
+		setPrecioCompra(BigDecimal.ZERO);
+		setDescripcion(UtilTexto.getInstance().obtenerValorDefecto());
+		setCategoria(new CategoriaDTO());
+		setEstadoProducto(new EstadoProductoDTO());
+	}
 
-    // Constructores
-    public ProductoDTO() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setNombre(UtilTexto.getInstance().obtenerValorDefecto());
-        setDescripcion(UtilTexto.getInstance().obtenerValorDefecto());
-        setPrecioCompra(BigDecimal.ZERO);
-        setPrecioVenta(BigDecimal.ZERO);
-        setGanancia(BigDecimal.ZERO);
-    }
+	public ProductoDTO(final UUID id, final MarcaDTO marca, final SaborDTO sabor, final EdicionDTO edicion,
+	                   final BigDecimal precioCompra, final String descripcion,
+	                   final CategoriaDTO categoria, final EstadoProductoDTO estadoProducto) {
+		setId(id);
+		setMarca(marca);
+		setSabor(sabor);
+		setEdicion(edicion);
+		setPrecioCompra(precioCompra);
+		setDescripcion(descripcion);
+		setCategoria(categoria);
+		setEstadoProducto(estadoProducto);
+	}
 
-    public static ProductoDTO obtenerValorDefecto(final ProductoDTO dto) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(dto, DEFAULT_OBJECT);
-    }
+	public static ProductoDTO obtenerValorDefecto(final ProductoDTO producto) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(producto, new ProductoDTO());
+	}
 
-    // Getters y Setters
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public ProductoDTO setId(UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public ProductoDTO setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+		return this;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
+	public MarcaDTO getMarca() {
+		return marca;
+	}
 
-    public ProductoDTO setNombre(String nombre) {
-        this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
-        return this;
-    }
+	public ProductoDTO setMarca(final MarcaDTO marca) {
+		this.marca = MarcaDTO.obtenerValorDefecto(marca);
+		return this;
+	}
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+	public SaborDTO getSabor() {
+		return sabor;
+	}
 
-    public ProductoDTO setDescripcion(String descripcion) {
-        this.descripcion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(descripcion);
-        return this;
-    }
+	public ProductoDTO setSabor(final SaborDTO sabor) {
+		this.sabor = SaborDTO.obtenerValorDefecto(sabor);
+		return this;
+	}
 
-    public BigDecimal getPrecioCompra() {
-        return precioCompra;
-    }
+	public EdicionDTO getEdicion() {
+		return edicion;
+	}
 
-    public ProductoDTO setPrecioCompra(BigDecimal precioCompra) {
-        this.precioCompra = UtilObjeto.getInstance().obtenerValorDefecto(precioCompra, BigDecimal.ZERO);
-        return this;
-    }
+	public ProductoDTO setEdicion(final EdicionDTO edicion) {
+		this.edicion = EdicionDTO.obtenerValorDefecto(edicion);
+		return this;
+	}
 
-    public BigDecimal getPrecioVenta() {
-        return precioVenta;
-    }
+	public BigDecimal getPrecioCompra() {
+		return precioCompra;
+	}
 
-    public ProductoDTO setPrecioVenta(BigDecimal precioVenta) {
-        this.precioVenta = UtilObjeto.getInstance().obtenerValorDefecto(precioVenta, BigDecimal.ZERO);
-        return this;
-    }
+	public ProductoDTO setPrecioCompra(final BigDecimal precioCompra) {
+		this.precioCompra = UtilBigDecimal.obtenerValorDefecto(precioCompra);
+		return this;
+	}
 
-    public BigDecimal getGanancia() {
-        return ganancia;
-    }
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-    public ProductoDTO setGanancia(BigDecimal ganancia) {
-        this.ganancia = UtilObjeto.getInstance().obtenerValorDefecto(ganancia, BigDecimal.ZERO);
-        return this;
-    }
+	public ProductoDTO setDescripcion(final String descripcion) {
+		this.descripcion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(descripcion);
+		return this;
+	}
+
+	public CategoriaDTO getCategoria() {
+		return categoria;
+	}
+
+	public ProductoDTO setCategoria(final CategoriaDTO categoria) {
+		this.categoria = CategoriaDTO.obtenerValorDefecto(categoria);
+		return this;
+	}
+
+	public EstadoProductoDTO getEstadoProducto() {
+		return estadoProducto;
+	}
+
+	public ProductoDTO setEstadoProducto(final EstadoProductoDTO estadoProducto) {
+		this.estadoProducto = EstadoProductoDTO.obtenerValorDefecto(estadoProducto);
+		return this;
+	}
 }

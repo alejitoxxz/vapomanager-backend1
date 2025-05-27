@@ -24,7 +24,7 @@ public final class DepartamentoEntityAssambler implements EntityAssembler<Depart
     public DepartamentoEntity toEntity(DepartamentoDomain domain) {
         return UtilObjeto.getInstance().esNulo(domain)
                 ? DepartamentoEntity.obtenerValorDefecto()
-                : DepartamentoEntity.create(domain.getId(), domain.getNombre());
+                : new DepartamentoEntity(domain.getId(), domain.getNombre());
     }
 
     @Override

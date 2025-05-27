@@ -4,95 +4,93 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilFecha;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
+import co.edu.uco.vapomanager.dto.ClienteDTO;
 
 public final class PedidoDTO {
 
-    public static final PedidoDTO DEFAULT_OBJECT = new PedidoDTO();
+	private UUID id;
+	private String numeroPedido;
+	private ClienteDTO cliente;
+	private ZonedDateTime fechaPedido;
+	private BigDecimal valorTotalPedido;
+	private BigDecimal gananciaPedido;
 
-    private UUID id;
-    private String numeroPedido;
-    private ClienteDTO cliente;
-    private ZonedDateTime fechaPedido;
-    private BigDecimal valorTotalPedido;
-    private BigDecimal gananciaPedido;
+	public PedidoDTO() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setNumeroPedido(UtilTexto.getInstance().obtenerValorDefecto());
+		setCliente(new ClienteDTO());
+		setFechaPedido(UtilFecha.obtenerFechaHoraActualZona());
+		setValorTotalPedido(BigDecimal.ZERO);
+		setGananciaPedido(BigDecimal.ZERO);
+	}
 
-    public PedidoDTO() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setNumeroPedido(UtilTexto.getInstance().obtenerValorDefecto());
-        setCliente(ClienteDTO.DEFAULT_OBJECT);
-        setFechaPedido(UtilFecha.obtenerFechaHoraActualZona());
-        setValorTotalPedido(BigDecimal.ZERO);
-        setGananciaPedido(BigDecimal.ZERO);
-    }
+	public PedidoDTO(final UUID id, final String numeroPedido, final ClienteDTO cliente,
+	                 final ZonedDateTime fechaPedido, final BigDecimal valorTotalPedido,
+	                 final BigDecimal gananciaPedido) {
+		setId(id);
+		setNumeroPedido(numeroPedido);
+		setCliente(cliente);
+		setFechaPedido(fechaPedido);
+		setValorTotalPedido(valorTotalPedido);
+		setGananciaPedido(gananciaPedido);
+	}
 
-    public PedidoDTO(UUID id, String numeroPedido, ClienteDTO cliente, ZonedDateTime fechaPedido, BigDecimal valorTotalPedido, BigDecimal gananciaPedido) {
-        setId(id);
-        setNumeroPedido(numeroPedido);
-        setCliente(cliente);
-        setFechaPedido(fechaPedido);
-        setValorTotalPedido(valorTotalPedido);
-        setGananciaPedido(gananciaPedido);
-    }
+	public static PedidoDTO obtenerValorDefecto(final PedidoDTO pedido) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(pedido, new PedidoDTO());
+	}
 
-    public static PedidoDTO obtenerValorDefecto(final PedidoDTO pedido) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(pedido, DEFAULT_OBJECT);
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public PedidoDTO setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+		return this;
+	}
 
-    public PedidoDTO setId(UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public String getNumeroPedido() {
+		return numeroPedido;
+	}
 
-    public String getNumeroPedido() {
-        return numeroPedido;
-    }
+	public PedidoDTO setNumeroPedido(final String numeroPedido) {
+		this.numeroPedido = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(numeroPedido);
+		return this;
+	}
 
-    public PedidoDTO setNumeroPedido(String numeroPedido) {
-        this.numeroPedido = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(numeroPedido);
-        return this;
-    }
+	public ClienteDTO getCliente() {
+		return cliente;
+	}
 
-    public ClienteDTO getCliente() {
-        return cliente;
-    }
+	public PedidoDTO setCliente(final ClienteDTO cliente) {
+		this.cliente = ClienteDTO.obtenerValorDefecto(cliente);
+		return this;
+	}
 
-    public PedidoDTO setCliente(ClienteDTO cliente) {
-        this.cliente = UtilObjeto.getInstance().obtenerValorDefecto(cliente, ClienteDTO.DEFAULT_OBJECT);
-        return this;
-    }
+	public ZonedDateTime getFechaPedido() {
+		return fechaPedido;
+	}
 
-    public ZonedDateTime getFechaPedido() {
-        return fechaPedido;
-    }
+	public PedidoDTO setFechaPedido(final ZonedDateTime fechaPedido) {
+		this.fechaPedido = UtilFecha.obtenerValorDefecto(fechaPedido);
+		return this;
+	}
 
-    public PedidoDTO setFechaPedido(ZonedDateTime fechaPedido) {
-        this.fechaPedido = UtilFecha.obtenerValorDefecto(fechaPedido);
-        return this;
-    }
+	public BigDecimal getValorTotalPedido() {
+		return valorTotalPedido;
+	}
 
-    public BigDecimal getValorTotalPedido() {
-        return valorTotalPedido;
-    }
+	public PedidoDTO setValorTotalPedido(final BigDecimal valorTotalPedido) {
+		this.valorTotalPedido = UtilObjeto.getInstance().obtenerValorDefecto(valorTotalPedido, BigDecimal.ZERO);
+		return this;
+	}
 
-    public PedidoDTO setValorTotalPedido(BigDecimal valorTotalPedido) {
-        this.valorTotalPedido = UtilObjeto.getInstance().obtenerValorDefecto(valorTotalPedido, BigDecimal.ZERO);
-        return this;
-    }
+	public BigDecimal getGananciaPedido() {
+		return gananciaPedido;
+	}
 
-    public BigDecimal getGananciaPedido() {
-        return gananciaPedido;
-    }
-
-    public PedidoDTO setGananciaPedido(BigDecimal gananciaPedido) {
-        this.gananciaPedido = UtilObjeto.getInstance().obtenerValorDefecto(gananciaPedido, BigDecimal.ZERO);
-        return this;
-    }
+	public PedidoDTO setGananciaPedido(final BigDecimal gananciaPedido) {
+		this.gananciaPedido = UtilObjeto.getInstance().obtenerValorDefecto(gananciaPedido, BigDecimal.ZERO);
+		return this;
+	}
 }

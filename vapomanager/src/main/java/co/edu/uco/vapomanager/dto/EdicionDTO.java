@@ -8,45 +8,43 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
 public final class EdicionDTO {
 
-    private UUID id;
-    private int edicion;
+	private UUID id;
+	private int edicion;
 
-    public static final EdicionDTO DEFAULT_OBJECT = new EdicionDTO();
+	public EdicionDTO() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setEdicion(UtilNumero.obtenerValorDefecto(0));
+	}
 
-    public EdicionDTO() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setEdicion(UtilNumero.obtenerValorDefecto(0));
-    }
+	public EdicionDTO(final UUID id) {
+		setId(id);
+		setEdicion(UtilNumero.obtenerValorDefecto(0));
+	}
 
-    public EdicionDTO(final UUID id) {
-        setId(id);
-        setEdicion(UtilNumero.obtenerValorDefecto(0));
-    }
+	public EdicionDTO(final UUID id, final int edicion) {
+		setId(id);
+		setEdicion(edicion);
+	}
 
-    public EdicionDTO(final UUID id, final int edicion) {
-        setId(id);
-        setEdicion(edicion);
-    }
+	public static EdicionDTO obtenerValorDefecto(final EdicionDTO edicion) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(edicion, new EdicionDTO());
+	}
 
-    public static EdicionDTO obtenerValorDefecto(final EdicionDTO edicion) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(edicion, DEFAULT_OBJECT);
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public EdicionDTO setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+		return this;
+	}
 
-    public EdicionDTO setId(final UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public int getEdicion() {
+		return edicion;
+	}
 
-    public int getEdicion() {
-        return edicion;
-    }
-
-    public EdicionDTO setEdicion(final int edicion) {
-        this.edicion = UtilNumero.obtenerValorDefecto(edicion);
-        return this;
-    }
+	public EdicionDTO setEdicion(final int edicion) {
+		this.edicion = UtilNumero.obtenerValorDefecto(edicion);
+		return this;
+	}
 }

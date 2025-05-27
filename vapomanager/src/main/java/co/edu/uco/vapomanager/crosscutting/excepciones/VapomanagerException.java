@@ -22,7 +22,7 @@ public class VapomanagerException extends Exception {
 	}
 
 	private void setMensajeUsuario(String mensajeUsuario) {
-		this.mensajeUsuario =UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(mensajeUsuario);
+		this.mensajeUsuario =UtilTexto.getInstance().quitarEspacioBlancoInicioFin(mensajeUsuario);
 	}
 	
 	public String getMensajeTecnico() {

@@ -44,6 +44,6 @@ public final class AdministradorDomain {
     }
 
     public void setCorreo(final String correo) {
-        this.correo = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(correo);
+        this.correo = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(correo);
     }
 }

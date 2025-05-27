@@ -3,126 +3,112 @@ package co.edu.uco.vapomanager.entity;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilBigDecimal;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
 
 public final class ProductoEntity {
 
-    public static final ProductoEntity DEFAULT_OBJECT = new ProductoEntity();
+	private UUID id;
+	private MarcaEntity marca;
+	private SaborEntity sabor;
+	private EdicionEntity edicion;
+	private BigDecimal precioCompra;
+	private String descripcion;
+	private CategoriaEntity categoria;
+	private EstadoProductoEntity estadoProducto;
 
-    private UUID id;
-    private MarcaEntity marca;
-    private SaborEntity sabor;
-    private EdicionEntity edicion;
-    private BigDecimal precioCompra;
-    private String descripcion;
-    private CategoriaEntity categoria;
-    private EstadoProductoEntity estadoProducto;
+	public ProductoEntity() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setMarca(new MarcaEntity());
+		setSabor(new SaborEntity());
+		setEdicion(new EdicionEntity());
+		setPrecioCompra(BigDecimal.ZERO);
+		setDescripcion(UtilTexto.getInstance().obtenerValorDefecto());
+		setCategoria(new CategoriaEntity());
+		setEstadoProducto(new EstadoProductoEntity());
+	}
 
-    // Constructores
-    public ProductoEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setMarca(MarcaEntity.DEFAULT_OBJECT);
-        setSabor(SaborEntity.DEFAULT_OBJECT);
-        setEdicion(EdicionEntity.DEFAULT_OBJECT);
-        setPrecioCompra(BigDecimal.ZERO);
-        setDescripcion(UtilTexto.getInstance().obtenerValorDefecto());
-        setCategoria(CategoriaEntity.DEFAULT_OBJECT);
-        setEstadoProducto(EstadoProductoEntity.DEFAULT_OBJECT);
-    }
+	public ProductoEntity(final UUID id, final MarcaEntity marca, final SaborEntity sabor, final EdicionEntity edicion,
+	                      final BigDecimal precioCompra, final String descripcion, final CategoriaEntity categoria,
+	                      final EstadoProductoEntity estadoProducto) {
+		setId(id);
+		setMarca(marca);
+		setSabor(sabor);
+		setEdicion(edicion);
+		setPrecioCompra(precioCompra);
+		setDescripcion(descripcion);
+		setCategoria(categoria);
+		setEstadoProducto(estadoProducto);
+	}
 
-    public ProductoEntity(UUID id, MarcaEntity marca, SaborEntity sabor, EdicionEntity edicion, 
-                          BigDecimal precioCompra, String descripcion, CategoriaEntity categoria, 
-                          EstadoProductoEntity estadoProducto) {
-        setId(id);
-        setMarca(marca);
-        setSabor(sabor);
-        setEdicion(edicion);
-        setPrecioCompra(precioCompra);
-        setDescripcion(descripcion);
-        setCategoria(categoria);
-        setEstadoProducto(estadoProducto);
-    }
+	public static ProductoEntity obtenerValorDefecto(final ProductoEntity entity) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(entity, new ProductoEntity());
+	}
 
-    // Método de fábrica
-    public static ProductoEntity create(UUID id, MarcaEntity marca, SaborEntity sabor, EdicionEntity edicion, 
-                                        BigDecimal precioCompra, String descripcion, CategoriaEntity categoria, 
-                                        EstadoProductoEntity estadoProducto) {
-        return new ProductoEntity(id, marca, sabor, edicion, precioCompra, descripcion, categoria, estadoProducto);
-    }
+	public static ProductoEntity obtenerValorDefecto() {
+		return new ProductoEntity();
+	}
 
-    // Getters y Setters
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public ProductoEntity setId(UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public void setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+	}
 
-    public MarcaEntity getMarca() {
-        return marca;
-    }
+	public MarcaEntity getMarca() {
+		return marca;
+	}
 
-    public ProductoEntity setMarca(MarcaEntity marca) {
-        this.marca = UtilObjeto.getInstance().obtenerValorDefecto(marca, MarcaEntity.DEFAULT_OBJECT);
-        return this;
-    }
+	public void setMarca(final MarcaEntity marca) {
+		this.marca = MarcaEntity.obtenerValorDefecto(marca);
+	}
 
-    public SaborEntity getSabor() {
-        return sabor;
-    }
+	public SaborEntity getSabor() {
+		return sabor;
+	}
 
-    public ProductoEntity setSabor(SaborEntity sabor) {
-        this.sabor = UtilObjeto.getInstance().obtenerValorDefecto(sabor, SaborEntity.DEFAULT_OBJECT);
-        return this;
-    }
+	public void setSabor(final SaborEntity sabor) {
+		this.sabor = SaborEntity.obtenerValorDefecto(sabor);
+	}
 
-    public EdicionEntity getEdicion() {
-        return edicion;
-    }
+	public EdicionEntity getEdicion() {
+		return edicion;
+	}
 
-    public ProductoEntity setEdicion(EdicionEntity edicion) {
-        this.edicion = UtilObjeto.getInstance().obtenerValorDefecto(edicion, EdicionEntity.DEFAULT_OBJECT);
-        return this;
-    }
+	public void setEdicion(final EdicionEntity edicion) {
+		this.edicion = EdicionEntity.obtenerValorDefecto(edicion);
+	}
 
-    public BigDecimal getPrecioCompra() {
-        return precioCompra;
-    }
+	public BigDecimal getPrecioCompra() {
+		return precioCompra;
+	}
 
-    public ProductoEntity setPrecioCompra(BigDecimal precioCompra) {
-        this.precioCompra = UtilBigDecimal.obtenerValorDefecto(precioCompra);
-        return this;
-    }
+	public void setPrecioCompra(final BigDecimal precioCompra) {
+		this.precioCompra = UtilBigDecimal.obtenerValorDefecto(precioCompra);
+	}
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-    public ProductoEntity setDescripcion(String descripcion) {
-        this.descripcion = UtilTexto.getInstance().obtenerValorDefecto(descripcion);
-        return this;
-    }
+	public void setDescripcion(final String descripcion) {
+		this.descripcion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(descripcion);
+	}
 
-    public CategoriaEntity getCategoria() {
-        return categoria;
-    }
+	public CategoriaEntity getCategoria() {
+		return categoria;
+	}
 
-    public ProductoEntity setCategoria(CategoriaEntity categoria) {
-        this.categoria = UtilObjeto.getInstance().obtenerValorDefecto(categoria, CategoriaEntity.DEFAULT_OBJECT);
-        return this;
-    }
+	public void setCategoria(final CategoriaEntity categoria) {
+		this.categoria = CategoriaEntity.obtenerValorDefecto(categoria);
+	}
 
-    public EstadoProductoEntity getEstadoProducto() {
-        return estadoProducto;
-    }
+	public EstadoProductoEntity getEstadoProducto() {
+		return estadoProducto;
+	}
 
-    public ProductoEntity setEstadoProducto(EstadoProductoEntity estadoProducto) {
-        this.estadoProducto = UtilObjeto.getInstance().obtenerValorDefecto(estadoProducto, EstadoProductoEntity.DEFAULT_OBJECT);
-        return this;
-    }
+	public void setEstadoProducto(final EstadoProductoEntity estadoProducto) {
+		this.estadoProducto = EstadoProductoEntity.obtenerValorDefecto(estadoProducto);
+	}
 }

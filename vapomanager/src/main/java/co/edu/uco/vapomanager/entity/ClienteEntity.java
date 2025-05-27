@@ -8,211 +8,188 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
 
 public final class ClienteEntity {
 
-    public static final ClienteEntity DEFAULT_OBJECT = new ClienteEntity();
+	private UUID id;
+	private String nombres;
+	private String apellidos;
+	private String correoElectronico;
+	private boolean confirmacionCorreo;
+	private String telefono;
+	private boolean confirmacionTelefono;
+	private boolean estadoCuenta;
+	private TipoDocumentoEntity tipoDocumento;
+	private int numeroDocumento;
+	private String direccion;
+	private CiudadEntity ciudad;
+	private String descripcionDireccion;
+	private LocalDateTime fechaRegistro;
+	private BigDecimal totalComprado;
 
-    private UUID id;
-    private String nombres;
-    private String apellidos;
-    private String correoElectronico;
-    private boolean confirmacionCorreo;
-    private String telefono;
-    private boolean confirmacionTelefono;
-    private boolean estadoCuenta;
-    private TipoDocumentoEntity tipoDocumento;
-    private int numeroDocumento;
-    private String direccion;
-    private CiudadEntity ciudad;
-    private String descripcionDireccion;
-    private LocalDateTime fechaRegistro;
-    private BigDecimal totalComprado;
+	public ClienteEntity() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setNombres(UtilTexto.getInstance().obtenerValorDefecto());
+		setApellidos(UtilTexto.getInstance().obtenerValorDefecto());
+		setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
+		setConfirmacionCorreo(false);
+		setTelefono(UtilTexto.getInstance().obtenerValorDefecto());
+		setConfirmacionTelefono(false);
+		setEstadoCuenta(false);
+		setTipoDocumento(new TipoDocumentoEntity());
+		setNumeroDocumento(0);
+		setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
+		setCiudad(new CiudadEntity());
+		setDescripcionDireccion(UtilTexto.getInstance().obtenerValorDefecto());
+		setFechaRegistro(LocalDateTime.now());
+		setTotalComprado(BigDecimal.ZERO);
+	}
 
-    public ClienteEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setNombres(UtilTexto.getInstance().obtenerValorDefecto());
-        setApellidos(UtilTexto.getInstance().obtenerValorDefecto());
-        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
-        setConfirmacionCorreo(false);
-        setTelefono(UtilTexto.getInstance().obtenerValorDefecto());
-        setConfirmacionTelefono(false);
-        setEstadoCuenta(false);
-        setTipoDocumento(new TipoDocumentoEntity());
-        setNumeroDocumento(0);
-        setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
-        setCiudad(new CiudadEntity());
-        setDescripcionDireccion(UtilTexto.getInstance().obtenerValorDefecto());
-        setFechaRegistro(LocalDateTime.now());
-        setTotalComprado(BigDecimal.ZERO);
-    }
+	public ClienteEntity(final UUID id, final String nombres, final String apellidos, final String correoElectronico,
+	                     final boolean confirmacionCorreo, final String telefono, final boolean confirmacionTelefono,
+	                     final boolean estadoCuenta, final TipoDocumentoEntity tipoDocumento, final int numeroDocumento,
+	                     final String direccion, final CiudadEntity ciudad, final String descripcionDireccion,
+	                     final LocalDateTime fechaRegistro, final BigDecimal totalComprado) {
 
-    private ClienteEntity(UUID id, String nombres, String apellidos, String correoElectronico,
-                          boolean confirmacionCorreo, String telefono, boolean confirmacionTelefono,
-                          boolean estadoCuenta, TipoDocumentoEntity tipoDocumento, int numeroDocumento,
-                          String direccion, CiudadEntity ciudad, String descripcionDireccion,
-                          LocalDateTime fechaRegistro, BigDecimal totalComprado) {
+		setId(id);
+		setNombres(nombres);
+		setApellidos(apellidos);
+		setCorreoElectronico(correoElectronico);
+		setConfirmacionCorreo(confirmacionCorreo);
+		setTelefono(telefono);
+		setConfirmacionTelefono(confirmacionTelefono);
+		setEstadoCuenta(estadoCuenta);
+		setTipoDocumento(tipoDocumento);
+		setNumeroDocumento(numeroDocumento);
+		setDireccion(direccion);
+		setCiudad(ciudad);
+		setDescripcionDireccion(descripcionDireccion);
+		setFechaRegistro(fechaRegistro);
+		setTotalComprado(totalComprado);
+	}
 
-        setId(id);
-        setNombres(nombres);
-        setApellidos(apellidos);
-        setCorreoElectronico(correoElectronico);
-        setConfirmacionCorreo(confirmacionCorreo);
-        setTelefono(telefono);
-        setConfirmacionTelefono(confirmacionTelefono);
-        setEstadoCuenta(estadoCuenta);
-        setTipoDocumento(tipoDocumento);
-        setNumeroDocumento(numeroDocumento);
-        setDireccion(direccion);
-        setCiudad(ciudad);
-        setDescripcionDireccion(descripcionDireccion);
-        setFechaRegistro(fechaRegistro);
-        setTotalComprado(totalComprado);
-    }
+	public static ClienteEntity obtenerValorDefecto(final ClienteEntity cliente) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(cliente, new ClienteEntity());
+	}
 
-    public static ClienteEntity create(UUID id, String nombres, String apellidos, String correoElectronico,
-                                       boolean confirmacionCorreo, String telefono, boolean confirmacionTelefono,
-                                       boolean estadoCuenta, TipoDocumentoEntity tipoDocumento, int numeroDocumento,
-                                       String direccion, CiudadEntity ciudad, String descripcionDireccion,
-                                       LocalDateTime fechaRegistro, BigDecimal totalComprado) {
-        return new ClienteEntity(id, nombres, apellidos, correoElectronico, confirmacionCorreo,
-                telefono, confirmacionTelefono, estadoCuenta, tipoDocumento, numeroDocumento,
-                direccion, ciudad, descripcionDireccion, fechaRegistro, totalComprado);
-    }
+	public static ClienteEntity obtenerValorDefecto() {
+		return new ClienteEntity();
+	}
 
-    public static ClienteEntity obtenerValorDefecto(final ClienteEntity cliente) {
-        return UtilObjeto.getInstance().obtenerValorDefecto(cliente, DEFAULT_OBJECT);
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public void setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+	}
 
-    public ClienteEntity setId(UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public String getNombres() {
+		return nombres;
+	}
 
-    public String getNombres() {
-        return nombres;
-    }
+	public void setNombres(final String nombres) {
+		this.nombres = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(nombres);
+	}
 
-    public ClienteEntity setNombres(String nombres) {
-        this.nombres = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombres);
-        return this;
-    }
+	public String getApellidos() {
+		return apellidos;
+	}
 
-    public String getApellidos() {
-        return apellidos;
-    }
+	public void setApellidos(final String apellidos) {
+		this.apellidos = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(apellidos);
+	}
 
-    public ClienteEntity setApellidos(String apellidos) {
-        this.apellidos = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(apellidos);
-        return this;
-    }
+	public String getCorreoElectronico() {
+		return correoElectronico;
+	}
 
-    public String getCorreoElectronico() {
-        return correoElectronico;
-    }
+	public void setCorreoElectronico(final String correoElectronico) {
+		this.correoElectronico = UtilCorreo.obtenerValorDefecto(correoElectronico);
+	}
 
-    public ClienteEntity setCorreoElectronico(String correoElectronico) {
-        this.correoElectronico = UtilCorreo.obtenerValorDefecto(correoElectronico);
-        return this;
-    }
+	public boolean isConfirmacionCorreo() {
+		return confirmacionCorreo;
+	}
 
-    public boolean isConfirmacionCorreo() {
-        return confirmacionCorreo;
-    }
+	public void setConfirmacionCorreo(final boolean confirmacionCorreo) {
+		this.confirmacionCorreo = UtilBooleano.obtenerValorDefecto(confirmacionCorreo);
+	}
 
-    public ClienteEntity setConfirmacionCorreo(boolean confirmacionCorreo) {
-        this.confirmacionCorreo = UtilBooleano.obtenerValorDefecto(confirmacionCorreo);
-        return this;
-    }
+	public String getTelefono() {
+		return telefono;
+	}
 
-    public String getTelefono() {
-        return telefono;
-    }
+	public void setTelefono(final String telefono) {
+		this.telefono = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(telefono);
+	}
 
-    public ClienteEntity setTelefono(String telefono) {
-        this.telefono = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(telefono);
-        return this;
-    }
+	public boolean isConfirmacionTelefono() {
+		return confirmacionTelefono;
+	}
 
-    public boolean isConfirmacionTelefono() {
-        return confirmacionTelefono;
-    }
+	public void setConfirmacionTelefono(final boolean confirmacionTelefono) {
+		this.confirmacionTelefono = UtilBooleano.obtenerValorDefecto(confirmacionTelefono);
+	}
 
-    public ClienteEntity setConfirmacionTelefono(boolean confirmacionTelefono) {
-        this.confirmacionTelefono = UtilBooleano.obtenerValorDefecto(confirmacionTelefono);
-        return this;
-    }
+	public boolean isEstadoCuenta() {
+		return estadoCuenta;
+	}
 
-    public boolean isEstadoCuenta() {
-        return estadoCuenta;
-    }
+	public void setEstadoCuenta(final boolean estadoCuenta) {
+		this.estadoCuenta = UtilBooleano.obtenerValorDefecto(estadoCuenta);
+	}
 
-    public ClienteEntity setEstadoCuenta(boolean estadoCuenta) {
-        this.estadoCuenta = UtilBooleano.obtenerValorDefecto(estadoCuenta);
-        return this;
-    }
+	public TipoDocumentoEntity getTipoDocumento() {
+		return tipoDocumento;
+	}
 
-    public TipoDocumentoEntity getTipoDocumento() {
-        return tipoDocumento;
-    }
+	public void setTipoDocumento(final TipoDocumentoEntity tipoDocumento) {
+		this.tipoDocumento = TipoDocumentoEntity.obtenerValorDefecto(tipoDocumento);
+	}
 
-    public ClienteEntity setTipoDocumento(TipoDocumentoEntity tipoDocumento) {
-        this.tipoDocumento = UtilObjeto.getInstance().obtenerValorDefecto(tipoDocumento, new TipoDocumentoEntity());
-        return this;
-    }
+	public int getNumeroDocumento() {
+		return numeroDocumento;
+	}
 
-    public int getNumeroDocumento() {
-        return numeroDocumento;
-    }
+	public void setNumeroDocumento(final int numeroDocumento) {
+		this.numeroDocumento = numeroDocumento;
+	}
 
-    public ClienteEntity setNumeroDocumento(int numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-        return this;
-    }
+	public String getDireccion() {
+		return direccion;
+	}
 
-    public String getDireccion() {
-        return direccion;
-    }
+	public void setDireccion(final String direccion) {
+		this.direccion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(direccion);
+	}
 
-    public ClienteEntity setDireccion(String direccion) {
-        this.direccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(direccion);
-        return this;
-    }
+	public CiudadEntity getCiudad() {
+		return ciudad;
+	}
 
-    public CiudadEntity getCiudad() {
-        return ciudad;
-    }
+	public void setCiudad(final CiudadEntity ciudad) {
+		this.ciudad = CiudadEntity.obtenerValorDefecto(ciudad);
+	}
 
-    public ClienteEntity setCiudad(CiudadEntity ciudad) {
-        this.ciudad = UtilObjeto.getInstance().obtenerValorDefecto(ciudad, new CiudadEntity());
-        return this;
-    }
+	public String getDescripcionDireccion() {
+		return descripcionDireccion;
+	}
 
-    public String getDescripcionDireccion() {
-        return descripcionDireccion;
-    }
+	public void setDescripcionDireccion(final String descripcionDireccion) {
+		this.descripcionDireccion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(descripcionDireccion);
+	}
 
-    public ClienteEntity setDescripcionDireccion(String descripcionDireccion) {
-        this.descripcionDireccion = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(descripcionDireccion);
-        return this;
-    }
+	public LocalDateTime getFechaRegistro() {
+		return fechaRegistro;
+	}
 
-    public LocalDateTime getFechaRegistro() {
-        return fechaRegistro;
-    }
+	public void setFechaRegistro(final LocalDateTime fechaRegistro) {
+		this.fechaRegistro = UtilObjeto.getInstance().obtenerValorDefecto(fechaRegistro, LocalDateTime.now());
+	}
 
-    public ClienteEntity setFechaRegistro(LocalDateTime fechaRegistro) {
-        this.fechaRegistro = UtilObjeto.getInstance().obtenerValorDefecto(fechaRegistro, LocalDateTime.now());
-        return this;
-    }
+	public BigDecimal getTotalComprado() {
+		return totalComprado;
+	}
 
-    public BigDecimal getTotalComprado() {
-        return totalComprado;
-    }
-
-    public ClienteEntity setTotalComprado(BigDecimal totalComprado) {
-        this.totalComprado = UtilObjeto.getInstance().obtenerValorDefecto(totalComprado, BigDecimal.ZERO);
-        return this;
-    }
+	public void setTotalComprado(final BigDecimal totalComprado) {
+		this.totalComprado = UtilObjeto.getInstance().obtenerValorDefecto(totalComprado, BigDecimal.ZERO);
+	}
 }

@@ -2,45 +2,46 @@ package co.edu.uco.vapomanager.entity;
 
 import java.util.UUID;
 
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
 public final class SaborEntity {
 
-    private UUID id;
-    private String sabor;
+	private UUID id;
+	private String sabor;
 
-    public static final SaborEntity DEFAULT_OBJECT = new SaborEntity();
+	public SaborEntity() {
+		setId(UtilUUID.obtenerValorDefecto());
+		setSabor(UtilTexto.getInstance().obtenerValorDefecto());
+	}
 
-    public SaborEntity() {
-        setId(UtilUUID.obtenerValorDefecto());
-        setSabor(UtilTexto.getInstance().obtenerValorDefecto());
-    }
+	public SaborEntity(final UUID id, final String sabor) {
+		setId(id);
+		setSabor(sabor);
+	}
 
-    public SaborEntity(final UUID id, final String sabor) {
-        setId(id);
-        setSabor(sabor);
-    }
+	public static SaborEntity obtenerValorDefecto(final SaborEntity entidad) {
+		return UtilObjeto.getInstance().obtenerValorDefecto(entidad, new SaborEntity());
+	}
 
-    public static SaborEntity obtenerValorDefecto(final SaborEntity entidad) {
-        return entidad != null ? entidad : DEFAULT_OBJECT;
-    }
+	public static SaborEntity obtenerValorDefecto() {
+		return new SaborEntity();
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public SaborEntity setId(UUID id) {
-        this.id = UtilUUID.obtenerValorDefecto(id);
-        return this;
-    }
+	public void setId(final UUID id) {
+		this.id = UtilUUID.obtenerValorDefecto(id);
+	}
 
-    public String getSabor() {
-        return sabor;
-    }
+	public String getSabor() {
+		return sabor;
+	}
 
-    public SaborEntity setSabor(String sabor) {
-        this.sabor = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(sabor); // ← aquí se corrigió el nombre del método
-        return this;
-    }
+	public void setSabor(final String sabor) {
+		this.sabor = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(sabor);
+	}
 }
