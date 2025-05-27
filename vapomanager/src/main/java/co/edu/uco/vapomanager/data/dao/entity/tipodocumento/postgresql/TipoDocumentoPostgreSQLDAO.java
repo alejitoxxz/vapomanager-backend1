@@ -44,38 +44,7 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("SELECT id, tipo_documento, descripcion FROM tipo_documento");
 
-        try (Statement sentencia = conexion.createStatement();
-             ResultSet cursorResultados = sentencia.executeQuery(senteciaSQL.toString())) {
-
-            while (cursorResultados.next()) {
-                var tipoDocumento = new TipoDocumentoEntity();
-                tipoDocumento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                tipoDocumento.setNombre(cursorResultados.getString("tipo_documento"));
-                tipoDocumento.setDescripcion(cursorResultados.getString("descripcion"));
-                listaTiposDocumento.add(tipoDocumento);
-            }
-            return listaTiposDocumento;
-
-        } catch (SQLException exception) {
-            var mensajeUsuario = "Se presentó un problema listando todos los tipos de documento.";
-            var mensajeTecnico = "SQLException en SELECT ALL: " + exception.getMessage();
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "Error inesperado al listar todos los tipos de documento.";
-            var mensajeTecnico = "Excepción no controlada en SELECT ALL: " + exception.getMessage();
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        }
-    }
-
-    @Override
-    public List<TipoDocumentoEntity> listByFilter(TipoDocumentoEntity filter) throws VapomanagerException {
-        asegurarConexionAbierta();
-        var listaTiposDocumento = new ArrayList<TipoDocumentoEntity>();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, tipo_documento, descripcion FROM tipo_documento WHERE tipo_documento ILIKE ?");
-
         try (PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-            sentenciaPreparada.setString(1, "%" + filter.getNombre() + "%");
             try (ResultSet cursorResultados = sentenciaPreparada.executeQuery()) {
                 while (cursorResultados.next()) {
                     var tipoDocumento = new TipoDocumentoEntity();
@@ -88,15 +57,51 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
             return listaTiposDocumento;
 
         } catch (SQLException exception) {
-            var mensajeUsuario = "Se presentó un problema consultando tipos de documento por filtro.";
-            var mensajeTecnico = "SQLException en SELECT filtro: " + exception.getMessage();
+            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los tipodocumentos...";
+            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla tipodocumento para consultar todos los registros...";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         } catch (Exception exception) {
-            var mensajeUsuario = "Error inesperado al consultar tipos de documento por filtro.";
-            var mensajeTecnico = "Excepción no controlada en SELECT filtro: " + exception.getMessage();
+            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo tipodocumento...";
+            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla tipodocumento, para consultar todos los registros... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
     }
+
+    @Override
+    public List<TipoDocumentoEntity> listByFilter(TipoDocumentoEntity filter) throws VapomanagerException {
+        var listaResultados = new ArrayList<TipoDocumentoEntity>();
+        var senteciaSQL = new StringBuilder();
+        
+        senteciaSQL.append("SELECT id, tipo_documento, descripcion FROM tipo_documento ORDER BY tipo_documento ASC");
+        
+        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+            
+            try (var cursorResultados = sentenciaPreparada.executeQuery()) {
+                
+                while (cursorResultados.next()) {
+                    var tipoDocumentoRetorno = new TipoDocumentoEntity();
+                    tipoDocumentoRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
+                    tipoDocumentoRetorno.setNombre(cursorResultados.getString("tipo_documento"));
+                    tipoDocumentoRetorno.setDescripcion(cursorResultados.getString("descripcion"));
+                    
+                    listaResultados.add(tipoDocumentoRetorno);
+                }
+                
+            }
+            
+        } catch (SQLException exception) {
+            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los tipodocumentos...";
+            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla tipodocumento para consultar todos los registros...";
+            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (Exception exception) {
+            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo tipodocumento...";
+            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla tipodocumento, para consultar todos los registros... ";
+            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        }
+        
+        return listaResultados;
+    }
+
 
     @Override
     public TipoDocumentoEntity listById(UUID id) throws VapomanagerException {
@@ -117,12 +122,12 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
             return tipoDocumentoRetorno;
 
         } catch (SQLException exception) {
-            var mensajeUsuario = "Se presentó un problema consultando el tipo de documento por ID.";
-            var mensajeTecnico = "SQLException en SELECT BY ID: " + exception.getMessage();
+            var mensajeUsuario = "se ha presentado un problema tratando de consultar el tipodocumento con el identificador deseado la informacion del nuevo tipodocumento...";
+            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla tipodocumento por id, para tener mas detalles revise el log de errores... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         } catch (Exception exception) {
-            var mensajeUsuario = "Error inesperado al consultar el tipo de documento por ID.";
-            var mensajeTecnico = "Excepción no controlada en SELECT BY ID: " + exception.getMessage();
+            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo tipodocumento...";
+            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla tipodocumento, para tener mas detalles, revise el log de errores... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
     }

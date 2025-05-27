@@ -1,4 +1,4 @@
-package co.edu.uco.vapomanager.entity;
+package co.edu.uco.vapomanager.businesslogic.businesslogic.domain;
 
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
@@ -6,32 +6,27 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 
 import java.util.UUID;
 
-public final class DepartamentoEntity {
+public final class DepartamentoDomain {
 
-    public static final DepartamentoEntity DEFAULT_OBJECT = new DepartamentoEntity();
+    public static final DepartamentoDomain DEFAULT_OBJECT = new DepartamentoDomain();
 
     private UUID id;
     private String nombre;
 
-    public DepartamentoEntity() {
+    public DepartamentoDomain() {
         this(UtilUUID.obtenerValorDefecto(), UtilTexto.getInstance().obtenerValorDefecto());
     }
 
-    private DepartamentoEntity(UUID id, String nombre) {
+    public DepartamentoDomain(UUID id, String nombre) {
         setId(id);
         setNombre(nombre);
     }
 
-    public static DepartamentoEntity create(UUID id, String nombre) {
-        return new DepartamentoEntity(id, nombre);
+    public static DepartamentoDomain create(UUID id, String nombre) {
+        return new DepartamentoDomain(id, nombre);
     }
 
-    // Nuevo método sin parámetros para mantener consistencia con PaisEntity
-    public static DepartamentoEntity obtenerValorDefecto() {
-        return DEFAULT_OBJECT;
-    }
-
-    public static DepartamentoEntity obtenerValorDefecto(final DepartamentoEntity entity) {
+    public static DepartamentoDomain obtenerValorDefecto(final DepartamentoDomain entity) {
         return UtilObjeto.getInstance().obtenerValorDefecto(entity, DEFAULT_OBJECT);
     }
 
@@ -39,7 +34,7 @@ public final class DepartamentoEntity {
         return id;
     }
 
-    public DepartamentoEntity setId(final UUID id) {
+    public DepartamentoDomain setId(final UUID id) {
         this.id = UtilUUID.obtenerValorDefecto(id);
         return this;
     }
@@ -48,7 +43,7 @@ public final class DepartamentoEntity {
         return nombre;
     }
 
-    public DepartamentoEntity setNombre(final String nombre) {
+    public DepartamentoDomain setNombre(final String nombre) {
         this.nombre = UtilTexto.getInstance().quitarEspaciosBlancoInicioFin(nombre);
         return this;
     }
