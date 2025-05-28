@@ -6,6 +6,7 @@ import co.edu.uco.vapomanager.crosscutting.excepciones.VapomanagerException;
 import co.edu.uco.vapomanager.data.dao.entity.administrador.AdministradorDAO;
 import co.edu.uco.vapomanager.entity.AdministradorEntity;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,10 +17,20 @@ import java.util.UUID;
 
 public class AdministradorPostgreSQLDAO implements AdministradorDAO {
 
-    private Connection conexion;
+    private final DataSource dataSource;
 
-    public AdministradorPostgreSQLDAO(Connection conexion) {
-        this.conexion = conexion;
+    public AdministradorPostgreSQLDAO(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    private Connection obtenerConexion() throws VapomanagerException {
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException exception) {
+            var mensajeUsuario = "se ha presentado un problema tratando de obtener la conexion a la base de datos para la tabla administrador...";
+            var mensajeTecnico = "se presento una excepcion de tipo SQLException tratando de obtener la conexion para ejecutar operaciones sobre la tabla administrador...";
+            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        }
     }
 
     @Override
@@ -27,10 +38,13 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("INSERT INTO administrador(id, correo) VALUES (?, ?)");
 
-        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        try (var conexion = obtenerConexion();
+             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+
             sentenciaPreparada.setObject(1, entity.getId());
             sentenciaPreparada.setString(2, entity.getCorreo());
             sentenciaPreparada.executeUpdate();
+
         } catch (SQLException exception) {
             var mensajeUsuario = "se ha presentado un problema tratando de registrar la informacion del nuevo administrador...";
             var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un INSERT en la tabla administrador, para tener mas detalles revise el log de errores... ";
@@ -48,15 +62,17 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("SELECT id, correo FROM administrador ORDER BY correo ASC");
 
-        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-            try (var cursorResultados = sentenciaPreparada.executeQuery()) {
-                while (cursorResultados.next()) {
-                    var admin = new AdministradorEntity();
-                    admin.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                    admin.setCorreo(cursorResultados.getString("correo"));
-                    listaResultados.add(admin);
-                }
+        try (var conexion = obtenerConexion();
+             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
+             var cursorResultados = sentenciaPreparada.executeQuery()) {
+
+            while (cursorResultados.next()) {
+                var admin = new AdministradorEntity();
+                admin.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
+                admin.setCorreo(cursorResultados.getString("correo"));
+                listaResultados.add(admin);
             }
+
         } catch (SQLException exception) {
             var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los administradores...";
             var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla administrador para consultar todos los registros...";
@@ -72,30 +88,7 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
 
     @Override
     public List<AdministradorEntity> listAll() throws VapomanagerException {
-        var listaResultados = new ArrayList<AdministradorEntity>();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, correo FROM administrador ORDER BY correo ASC");
-
-        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-            try (var cursorResultados = sentenciaPreparada.executeQuery()) {
-                while (cursorResultados.next()) {
-                    var admin = new AdministradorEntity();
-                    admin.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                    admin.setCorreo(cursorResultados.getString("correo"));
-                    listaResultados.add(admin);
-                }
-            }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los administradores...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla administrador para consultar todos los registros...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla administrador, para consultar todos los registros... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        }
-
-        return listaResultados;
+        return listByFilter(new AdministradorEntity());
     }
 
     @Override
@@ -104,7 +97,9 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("SELECT id, correo FROM administrador WHERE id = ?");
 
-        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        try (var conexion = obtenerConexion();
+             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+
             sentenciaPreparada.setObject(1, id);
 
             try (var cursorResultados = sentenciaPreparada.executeQuery()) {
@@ -113,6 +108,7 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
                     administradorRetorno.setCorreo(cursorResultados.getString("correo"));
                 }
             }
+
         } catch (SQLException exception) {
             var mensajeUsuario = "se ha presentado un problema tratando de consultar el administrador con el identificador deseado la informacion del nuevo administrador...";
             var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla administrador por id, para tener mas detalles revise el log de errores... ";
@@ -131,10 +127,13 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("UPDATE administrador SET correo = ? WHERE id = ?");
 
-        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        try (var conexion = obtenerConexion();
+             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+
             sentenciaPreparada.setString(1, entity.getCorreo());
             sentenciaPreparada.setObject(2, id);
             sentenciaPreparada.executeUpdate();
+
         } catch (SQLException exception) {
             var mensajeUsuario = "se ha presentado un problema tratando de modificar la informacion del nuevo administrador...";
             var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un UPDATE en la tabla administrador, para tener mas detalles revise el log de errores... ";
@@ -151,9 +150,12 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("DELETE FROM administrador WHERE id = ?");
 
-        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        try (var conexion = obtenerConexion();
+             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+
             sentenciaPreparada.setObject(1, id);
             sentenciaPreparada.executeUpdate();
+
         } catch (SQLException exception) {
             var mensajeUsuario = "se ha presentado un problema tratando de eliminar la informacion del nuevo administrador...";
             var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un DELETE en la tabla administrador, para tener mas detalles revise el log de errores... ";

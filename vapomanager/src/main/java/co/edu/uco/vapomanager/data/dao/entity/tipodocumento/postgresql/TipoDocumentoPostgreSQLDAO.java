@@ -6,53 +6,39 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 import co.edu.uco.vapomanager.data.dao.entity.tipodocumento.TipoDocumentoDAO;
 import co.edu.uco.vapomanager.entity.TipoDocumentoEntity;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
 
-    private final Connection conexion;
+    private final DataSource dataSource;
 
-    public TipoDocumentoPostgreSQLDAO(Connection conexion) {
-        this.conexion = conexion;
-    }
-
-    private void asegurarConexionAbierta() throws VapomanagerException {
-        try {
-            if (conexion == null || conexion.isClosed()) {
-                var mensajeUsuario = "No hay conexión abierta para operar sobre tipos de documento.";
-                var mensajeTecnico = "La conexión JDBC es null o está cerrada.";
-                throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico);
-            }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "Error verificando el estado de la conexión a la base de datos.";
-            var mensajeTecnico = "SQLException comprobando conexión: " + exception.getMessage();
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        }
+    public TipoDocumentoPostgreSQLDAO(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
     public List<TipoDocumentoEntity> listAll() throws VapomanagerException {
-        asegurarConexionAbierta();
         var listaTiposDocumento = new ArrayList<TipoDocumentoEntity>();
         var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, tipo_documento, descripcion FROM tipo_documento");
+        senteciaSQL.append("SELECT id, tipo_documento FROM tipo_documento");
 
-        try (PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-            try (ResultSet cursorResultados = sentenciaPreparada.executeQuery()) {
-                while (cursorResultados.next()) {
-                    var tipoDocumento = new TipoDocumentoEntity();
-                    tipoDocumento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                    tipoDocumento.setNombre(cursorResultados.getString("tipo_documento"));
-                    tipoDocumento.setDescripcion(cursorResultados.getString("descripcion"));
-                    listaTiposDocumento.add(tipoDocumento);
-                }
+        try (
+            Connection conexion = dataSource.getConnection();
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
+            ResultSet cursorResultados = sentenciaPreparada.executeQuery()
+        ) {
+            while (cursorResultados.next()) {
+                var tipoDocumento = new TipoDocumentoEntity();
+                tipoDocumento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
+                tipoDocumento.setNombre(cursorResultados.getString("tipo_documento"));
+                listaTiposDocumento.add(tipoDocumento);
             }
             return listaTiposDocumento;
 
@@ -71,24 +57,20 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
     public List<TipoDocumentoEntity> listByFilter(TipoDocumentoEntity filter) throws VapomanagerException {
         var listaResultados = new ArrayList<TipoDocumentoEntity>();
         var senteciaSQL = new StringBuilder();
-        
-        senteciaSQL.append("SELECT id, tipo_documento, descripcion FROM tipo_documento ORDER BY tipo_documento ASC");
-        
-        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-            
-            try (var cursorResultados = sentenciaPreparada.executeQuery()) {
-                
-                while (cursorResultados.next()) {
-                    var tipoDocumentoRetorno = new TipoDocumentoEntity();
-                    tipoDocumentoRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                    tipoDocumentoRetorno.setNombre(cursorResultados.getString("tipo_documento"));
-                    tipoDocumentoRetorno.setDescripcion(cursorResultados.getString("descripcion"));
-                    
-                    listaResultados.add(tipoDocumentoRetorno);
-                }
-                
+        senteciaSQL.append("SELECT id, tipo_documento FROM tipo_documento ORDER BY tipo_documento ASC");
+
+        try (
+            Connection conexion = dataSource.getConnection();
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
+            ResultSet cursorResultados = sentenciaPreparada.executeQuery()
+        ) {
+            while (cursorResultados.next()) {
+                var tipoDocumentoRetorno = new TipoDocumentoEntity();
+                tipoDocumentoRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
+                tipoDocumentoRetorno.setNombre(cursorResultados.getString("tipo_documento"));
+                listaResultados.add(tipoDocumentoRetorno);
             }
-            
+
         } catch (SQLException exception) {
             var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los tipodocumentos...";
             var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla tipodocumento para consultar todos los registros...";
@@ -98,25 +80,25 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
             var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla tipodocumento, para consultar todos los registros... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
-        
+
         return listaResultados;
     }
 
-
     @Override
     public TipoDocumentoEntity listById(UUID id) throws VapomanagerException {
-        asegurarConexionAbierta();
         var tipoDocumentoRetorno = new TipoDocumentoEntity();
         var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, tipo_documento, descripcion FROM tipo_documento WHERE id = ?");
+        senteciaSQL.append("SELECT id, tipo_documento FROM tipo_documento WHERE id = ?");
 
-        try (PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        try (
+            Connection conexion = dataSource.getConnection();
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())
+        ) {
             sentenciaPreparada.setObject(1, id);
             try (ResultSet cursorResultados = sentenciaPreparada.executeQuery()) {
                 if (cursorResultados.next()) {
                     tipoDocumentoRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
                     tipoDocumentoRetorno.setNombre(cursorResultados.getString("tipo_documento"));
-                    tipoDocumentoRetorno.setDescripcion(cursorResultados.getString("descripcion"));
                 }
             }
             return tipoDocumentoRetorno;
