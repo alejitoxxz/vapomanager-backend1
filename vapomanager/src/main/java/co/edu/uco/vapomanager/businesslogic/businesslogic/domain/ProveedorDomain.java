@@ -2,7 +2,11 @@ package co.edu.uco.vapomanager.businesslogic.businesslogic.domain;
 
 import java.util.UUID;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.*;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilBooleano;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilNumero;
 
 public final class ProveedorDomain {
 
@@ -14,6 +18,7 @@ public final class ProveedorDomain {
     private boolean confirmacionCorreo;
     private String correoElectronico;
     private boolean estadoCuenta;
+    private int numeroTelefono;
     private String direccion;
     private CiudadDomain ciudad;
     private String descripcionDireccion;
@@ -25,8 +30,9 @@ public final class ProveedorDomain {
         setNombreEmpresa(UtilTexto.getInstance().obtenerValorDefecto());
         setConfirmacionTelefono(false);
         setConfirmacionCorreo(false);
-        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
+        setCorreoElectronico(UtilTexto.getInstance().obtenerValorDefecto());
         setEstadoCuenta(false);
+        setNumeroTelefono(0);
         setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setCiudad(new CiudadDomain());
         setDescripcionDireccion(UtilTexto.getInstance().obtenerValorDefecto());
@@ -34,16 +40,27 @@ public final class ProveedorDomain {
         setNumeroDocumento(0);
     }
 
-    public ProveedorDomain(UUID id, String nombreEmpresa, boolean confirmacionTelefono, boolean confirmacionCorreo,
-                           String correoElectronico, boolean estadoCuenta, String direccion, CiudadDomain ciudad,
-                           String descripcionDireccion, TipoDocumentoDomain tipoDocumento, int numeroDocumento) {
-
+    public ProveedorDomain(
+        UUID id,
+        String nombreEmpresa,
+        boolean confirmacionTelefono,
+        boolean confirmacionCorreo,
+        String correoElectronico,
+        boolean estadoCuenta,
+        int numeroTelefono,
+        String direccion,
+        CiudadDomain ciudad,
+        String descripcionDireccion,
+        TipoDocumentoDomain tipoDocumento,
+        int numeroDocumento
+    ) {
         setId(id);
         setNombreEmpresa(nombreEmpresa);
         setConfirmacionTelefono(confirmacionTelefono);
         setConfirmacionCorreo(confirmacionCorreo);
         setCorreoElectronico(correoElectronico);
         setEstadoCuenta(estadoCuenta);
+        setNumeroTelefono(numeroTelefono);
         setDireccion(direccion);
         setCiudad(ciudad);
         setDescripcionDireccion(descripcionDireccion);
@@ -51,12 +68,34 @@ public final class ProveedorDomain {
         setNumeroDocumento(numeroDocumento);
     }
 
-    public static ProveedorDomain create(UUID id, String nombreEmpresa, boolean confirmacionTelefono, boolean confirmacionCorreo,
-                                         String correoElectronico, boolean estadoCuenta, String direccion, CiudadDomain ciudad,
-                                         String descripcionDireccion, TipoDocumentoDomain tipoDocumento, int numeroDocumento) {
-
-        return new ProveedorDomain(id, nombreEmpresa, confirmacionTelefono, confirmacionCorreo, correoElectronico,
-                estadoCuenta, direccion, ciudad, descripcionDireccion, tipoDocumento, numeroDocumento);
+    public static ProveedorDomain create(
+        UUID id,
+        String nombreEmpresa,
+        boolean confirmacionTelefono,
+        boolean confirmacionCorreo,
+        String correoElectronico,
+        boolean estadoCuenta,
+        int numeroTelefono,
+        String direccion,
+        CiudadDomain ciudad,
+        String descripcionDireccion,
+        TipoDocumentoDomain tipoDocumento,
+        int numeroDocumento
+    ) {
+        return new ProveedorDomain(
+            id,
+            nombreEmpresa,
+            confirmacionTelefono,
+            confirmacionCorreo,
+            correoElectronico,
+            estadoCuenta,
+            numeroTelefono,
+            direccion,
+            ciudad,
+            descripcionDireccion,
+            tipoDocumento,
+            numeroDocumento
+        );
     }
 
     public static ProveedorDomain obtenerValorDefecto(final ProveedorDomain proveedor) {
@@ -104,7 +143,7 @@ public final class ProveedorDomain {
     }
 
     public ProveedorDomain setCorreoElectronico(String correoElectronico) {
-        this.correoElectronico = UtilCorreo.obtenerValorDefecto(correoElectronico);
+        this.correoElectronico = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(correoElectronico);
         return this;
     }
 
@@ -114,6 +153,15 @@ public final class ProveedorDomain {
 
     public ProveedorDomain setEstadoCuenta(boolean estadoCuenta) {
         this.estadoCuenta = UtilBooleano.obtenerValorDefecto(estadoCuenta);
+        return this;
+    }
+
+    public int getNumeroTelefono() {
+        return numeroTelefono;
+    }
+
+    public ProveedorDomain setNumeroTelefono(int numeroTelefono) {
+        this.numeroTelefono = UtilNumero.obtenerValorDefecto(numeroTelefono);
         return this;
     }
 

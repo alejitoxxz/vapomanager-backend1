@@ -2,10 +2,14 @@ package co.edu.uco.vapomanager.data.dao.factory.postgresql;
 
 import co.edu.uco.vapomanager.crosscutting.excepciones.DataVapomanagerException;
 import co.edu.uco.vapomanager.crosscutting.excepciones.VapomanagerException;
+import co.edu.uco.vapomanager.data.dao.entity.administrador.AdministradorDAO;
 import co.edu.uco.vapomanager.data.dao.entity.ciudad.CiudadDAO;
 import co.edu.uco.vapomanager.data.dao.entity.ciudad.postgresql.CiudadPostgreSQLDAO;
 import co.edu.uco.vapomanager.data.dao.entity.departamento.DepartamentoDAO;
 import co.edu.uco.vapomanager.data.dao.entity.departamento.postgresql.DepartamentoPostgreSQLDAO;
+import co.edu.uco.vapomanager.data.dao.entity.proveedor.ProveedorDAO;
+import co.edu.uco.vapomanager.data.dao.entity.tipodocumento.TipoDocumentoDAO;
+import co.edu.uco.vapomanager.data.dao.entity.tipodocumento.postgresql.TipoDocumentoPostgreSQLDAO;
 import co.edu.uco.vapomanager.data.dao.factory.DAOFactory;
 
 import javax.sql.DataSource;
@@ -130,4 +134,22 @@ public class PostgreSQLDAOFactory extends DAOFactory {
         asegurarConexionAbierta();
         return new CiudadPostgreSQLDAO(conexion);
     }
+    
+    @Override
+    public TipoDocumentoDAO getTipoDocumentoDAO() throws VapomanagerException {  // <— implementación añadida
+        abrirConexion();
+        return new TipoDocumentoPostgreSQLDAO(conexion);
+    }
+
+	@Override
+	public ProveedorDAO getProveedorDAO() throws VapomanagerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AdministradorDAO getAdministradorDAO() throws VapomanagerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

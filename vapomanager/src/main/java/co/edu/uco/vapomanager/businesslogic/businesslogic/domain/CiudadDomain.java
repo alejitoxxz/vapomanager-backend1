@@ -19,7 +19,7 @@ public final class CiudadDomain {
              DepartamentoDomain.obtenerValorDefecto(null));
     }
 
-    private CiudadDomain(UUID id, String nombre, DepartamentoDomain departamento) {
+    public CiudadDomain(UUID id, String nombre, DepartamentoDomain departamento) {
         setId(id);
         setNombre(nombre);
         setDepartamento(departamento);
