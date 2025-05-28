@@ -1,6 +1,7 @@
 package co.edu.uco.vapomanager.entity;
 
 import java.util.UUID;
+
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
@@ -15,12 +16,12 @@ public final class ProveedorEntity {
     private boolean confirmacionCorreo;
     private String correoElectronico;
     private boolean estadoCuenta;
-    private int numeroTelefono;
+    private Long numeroTelefono;
     private String direccion;
     private CiudadEntity ciudad;
     private String descripcionDireccion;
     private TipoDocumentoEntity tipoDocumento;
-    private int numeroDocumento;
+    private Long numeroDocumento;
 
     public ProveedorEntity() {
         setId(UtilUUID.obtenerValorDefecto());
@@ -29,12 +30,12 @@ public final class ProveedorEntity {
         setConfirmacionCorreo(false);
         setCorreoElectronico(UtilTexto.getInstance().obtenerValorDefecto());
         setEstadoCuenta(false);
-        setNumeroTelefono(0);
+        setNumeroTelefono(0L);
         setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setCiudad(new CiudadEntity());
         setDescripcionDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setTipoDocumento(new TipoDocumentoEntity());
-        setNumeroDocumento(0);
+        setNumeroDocumento(0L);
     }
 
     public ProveedorEntity(UUID id,
@@ -43,12 +44,12 @@ public final class ProveedorEntity {
                            boolean confirmacionCorreo,
                            String correoElectronico,
                            boolean estadoCuenta,
-                           int numeroTelefono,
+                           Long numeroTelefono,
                            String direccion,
                            CiudadEntity ciudad,
                            String descripcionDireccion,
                            TipoDocumentoEntity tipoDocumento,
-                           int numeroDocumento) {
+                           Long numeroDocumento) {
         setId(id);
         setNombreEmpresa(nombreEmpresa);
         setConfirmacionTelefono(confirmacionTelefono);
@@ -119,11 +120,11 @@ public final class ProveedorEntity {
         this.estadoCuenta = UtilBooleano.obtenerValorDefecto(estadoCuenta);
     }
 
-    public int getNumeroTelefono() {
+    public Long getNumeroTelefono() {
         return numeroTelefono;
     }
 
-    public void setNumeroTelefono(int numeroTelefono) {
+    public void setNumeroTelefono(Long numeroTelefono) {
         this.numeroTelefono = UtilNumero.obtenerValorDefecto(numeroTelefono);
     }
 
@@ -159,11 +160,11 @@ public final class ProveedorEntity {
         this.tipoDocumento = TipoDocumentoEntity.obtenerValorDefecto(tipoDocumento);
     }
 
-    public int getNumeroDocumento() {
+    public Long getNumeroDocumento() {
         return numeroDocumento;
     }
 
-    public void setNumeroDocumento(int numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
+    public void setNumeroDocumento(Long numeroDocumento) {
+        this.numeroDocumento = UtilNumero.obtenerValorDefecto(numeroDocumento);
     }
 }

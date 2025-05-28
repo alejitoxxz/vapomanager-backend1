@@ -24,19 +24,14 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
 
     @Override
     public void registrarNuevoProveedor(final ProveedorDomain proveedor) throws VapomanagerException {
-        // 1. Validar integridad de datos (tipo, longitud, obligatoriedad, formato, rango)
         validarIntegridadInformacionRegistrarProveedor(proveedor);
-
-        // 2. Validar unicidad
         validarNoExistaProveedorConMismoID(proveedor.getId());
         validarNoExistaProveedorConMismoCorreo(proveedor.getCorreoElectronico());
         validarNoExistaProveedorConMismoTelefono(proveedor.getNumeroTelefono());
         validarNoExistaProveedorConMismoDocumento(proveedor.getNumeroDocumento());
 
-        // 3. Generar nuevo identificador
         var nuevoId = generarIdentificadorNuevoProveedor();
 
-        // 4. Reconstruir el domain con el ID generado
         var domainACrear = new ProveedorDomain(
             nuevoId,
             proveedor.getNombreEmpresa(),
@@ -52,13 +47,11 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
             proveedor.getNumeroDocumento()
         );
 
-        // 5. Crear en la capa de persistencia
         var entity = ProveedorEntityAssambler.getInstance().toEntity(domainACrear);
         factory.getProveedorDAO().create(entity);
     }
 
     private void validarIntegridadInformacionRegistrarProveedor(final ProveedorDomain p) throws VapomanagerException {
-        // nombreEmpresa obligatorio y ≤ 100 caracteres
         if (UtilTexto.getInstance().estaVacia(p.getNombreEmpresa())) {
             throw BusinessLogicVapomanagerException.reportar("El nombre de la empresa es obligatorio");
         }
@@ -66,7 +59,6 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
             throw BusinessLogicVapomanagerException.reportar("El nombre de la empresa supera los 100 caracteres");
         }
 
-        // correo electrónico obligatorio, formato y ≤ 100 caracteres
         if (UtilTexto.getInstance().estaVacia(p.getCorreoElectronico())) {
             throw BusinessLogicVapomanagerException.reportar("El correo electrónico es obligatorio");
         }
@@ -77,12 +69,10 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
             throw BusinessLogicVapomanagerException.reportar("El correo electrónico supera los 100 caracteres");
         }
 
-        // número de teléfono obligatorio y positivo
         if (!UtilNumero.esPositivo(p.getNumeroTelefono())) {
             throw BusinessLogicVapomanagerException.reportar("El número de teléfono es obligatorio y debe ser positivo");
         }
 
-        // número de documento obligatorio, positivo y entre 6 y 12 dígitos
         if (!UtilNumero.esPositivo(p.getNumeroDocumento())) {
             throw BusinessLogicVapomanagerException.reportar("El número de documento es obligatorio y debe ser positivo");
         }
@@ -109,7 +99,7 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
         }
     }
 
-    private void validarNoExistaProveedorConMismoTelefono(final int telefono) throws VapomanagerException {
+    private void validarNoExistaProveedorConMismoTelefono(final long telefono) throws VapomanagerException {
         var filtro = new ProveedorEntity();
         filtro.setNumeroTelefono(telefono);
         if (!factory.getProveedorDAO().listByFilter(filtro).isEmpty()) {
@@ -117,7 +107,7 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
         }
     }
 
-    private void validarNoExistaProveedorConMismoDocumento(final int documento) throws VapomanagerException {
+    private void validarNoExistaProveedorConMismoDocumento(final long documento) throws VapomanagerException {
         var filtro = new ProveedorEntity();
         filtro.setNumeroDocumento(documento);
         if (!factory.getProveedorDAO().listByFilter(filtro).isEmpty()) {

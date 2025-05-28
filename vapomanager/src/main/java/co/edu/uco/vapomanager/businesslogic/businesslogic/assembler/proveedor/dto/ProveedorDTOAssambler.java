@@ -59,12 +59,12 @@ public final class ProveedorDTOAssambler implements DTOAssembler<ProveedorDTO, P
         boolean confCorreo = UtilBooleano.obtenerValorDefecto(dtoSeguro.isConfirmacionCorreo());
         String correo = UtilCorreo.obtenerValorDefecto(dtoSeguro.getCorreoElectronico());
         boolean estado = UtilBooleano.obtenerValorDefecto(dtoSeguro.isEstadoCuenta());
-        int telefono = UtilNumero.obtenerValorDefecto(dtoSeguro.getNumeroTelefono());
+        long telefono = UtilNumero.obtenerValorDefecto(dtoSeguro.getNumeroTelefono());
         String direccion = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(dtoSeguro.getDireccion());
         var ciudad = CiudadDTOAssambler.getInstance().toDomain(dtoSeguro.getCiudad());
         String descDir = UtilTexto.getInstance().quitarEspacioBlancoInicioFin(dtoSeguro.getDescripcionDireccion());
         var tipoDoc = TipoDocumentoDTOAssembler.getInstance().toDomain(dtoSeguro.getTipoDocumento());
-        int numDoc = dtoSeguro.getNumeroDocumento();
+        long numDoc = dtoSeguro.getNumeroDocumento();
 
         return new ProveedorDomain(
             id,

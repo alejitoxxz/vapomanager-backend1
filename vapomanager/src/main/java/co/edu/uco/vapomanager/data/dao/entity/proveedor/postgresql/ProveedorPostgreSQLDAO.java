@@ -10,8 +10,6 @@ import co.edu.uco.vapomanager.entity.TipoDocumentoEntity;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +38,9 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
               ciudad_id,
               descripcion_direccion,
               tipo_documento_id,
-              numero_documento
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              numero_documento,
+              numero_telefono
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """);
 
         try (Connection conexion = dataSource.getConnection();
@@ -57,7 +56,8 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
             sentenciaPreparada.setObject(8, entity.getCiudad().getId());
             sentenciaPreparada.setString(9, entity.getDescripcionDireccion());
             sentenciaPreparada.setObject(10, entity.getTipoDocumento().getId());
-            sentenciaPreparada.setInt(11, entity.getNumeroDocumento());
+            sentenciaPreparada.setLong(11, entity.getNumeroDocumento());
+            sentenciaPreparada.setLong(12, entity.getNumeroTelefono());
             sentenciaPreparada.executeUpdate();
         } catch (SQLException exception) {
             var mensajeUsuario = "se ha presentado un problema tratando de registrar la informacion del nuevo proveedor...";
@@ -71,15 +71,10 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
     }
 
     @Override
-    public List<ProveedorEntity> listByFilter(ProveedorEntity filter) throws VapomanagerException {
-        return listAll();
-    }
-
-    @Override
     public List<ProveedorEntity> listAll() throws VapomanagerException {
         var listaResultados = new ArrayList<ProveedorEntity>();
         var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, nombre_empresa, confirmacion_telefono, confirmacion_correo, correo_electronico, estado_cuenta, direccion, ciudad_id, descripcion_direccion, tipo_documento_id, numero_documento FROM proveedor ORDER BY nombre_empresa ASC");
+        senteciaSQL.append("SELECT id, nombre_empresa, confirmacion_telefono, confirmacion_correo, correo_electronico, estado_cuenta, direccion, ciudad_id, descripcion_direccion, tipo_documento_id, numero_documento, numero_telefono FROM proveedor ORDER BY nombre_empresa ASC");
 
         try (Connection conexion = dataSource.getConnection();
              var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
@@ -101,17 +96,18 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
                 var tipoDoc = new TipoDocumentoEntity();
                 tipoDoc.setId(UtilUUID.convertirAUUID(cursorResultados.getString("tipo_documento_id")));
                 proveedor.setTipoDocumento(tipoDoc);
-                proveedor.setNumeroDocumento(cursorResultados.getInt("numero_documento"));
+                proveedor.setNumeroDocumento(cursorResultados.getLong("numero_documento"));
+                proveedor.setNumeroTelefono(cursorResultados.getLong("numero_telefono"));
                 listaResultados.add(proveedor);
             }
 
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los proveedores...";
+            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de todos los proveedores...";
             var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla proveedor para consultar todos los registros...";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         } catch (Exception exception) {
             var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo proveedor...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla proveedor, para consultar todos los registros... ";
+            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Exception tratando de hacer un SELECT en la tabla proveedor, para consultar todos los registros... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
 
@@ -122,7 +118,7 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
     public ProveedorEntity listById(UUID id) throws VapomanagerException {
         var proveedor = new ProveedorEntity();
         var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, nombre_empresa, confirmacion_telefono, confirmacion_correo, correo_electronico, estado_cuenta, direccion, ciudad_id, descripcion_direccion, tipo_documento_id, numero_documento FROM proveedor WHERE id = ?");
+        senteciaSQL.append("SELECT id, nombre_empresa, confirmacion_telefono, confirmacion_correo, correo_electronico, estado_cuenta, direccion, ciudad_id, descripcion_direccion, tipo_documento_id, numero_documento, numero_telefono FROM proveedor WHERE id = ?");
 
         try (Connection conexion = dataSource.getConnection();
              var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
@@ -143,20 +139,26 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
                     var tipoDoc = new TipoDocumentoEntity();
                     tipoDoc.setId(UtilUUID.convertirAUUID(cursorResultados.getString("tipo_documento_id")));
                     proveedor.setTipoDocumento(tipoDoc);
-                    proveedor.setNumeroDocumento(cursorResultados.getInt("numero_documento"));
+                    proveedor.setNumeroDocumento(cursorResultados.getLong("numero_documento"));
+                    proveedor.setNumeroTelefono(cursorResultados.getLong("numero_telefono"));
                 }
             }
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar el proveedor con el identificador deseado la informacion del nuevo proveedor...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla proveedor por id, para tener mas detalles revise el log de errores... ";
+            var mensajeUsuario = "se ha presentado un problema tratando de consultar el proveedor con el identificador deseado...";
+            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla proveedor por id... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo proveedor...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla proveedor, para tener mas detalles, revise el log de errores... ";
+            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del proveedor...";
+            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Exception tratando de hacer un SELECT en la tabla proveedor... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
 
         return proveedor;
+    }
+
+    @Override
+    public List<ProveedorEntity> listByFilter(ProveedorEntity filter) throws VapomanagerException {
+        return listAll();
     }
 
     @Override
@@ -173,7 +175,8 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
               ciudad_id = ?,
               descripcion_direccion = ?,
               tipo_documento_id = ?,
-              numero_documento = ?
+              numero_documento = ?,
+              numero_telefono = ?
             WHERE id = ?
             """);
 
@@ -188,16 +191,17 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
             sentenciaPreparada.setObject(7, entity.getCiudad().getId());
             sentenciaPreparada.setString(8, entity.getDescripcionDireccion());
             sentenciaPreparada.setObject(9, entity.getTipoDocumento().getId());
-            sentenciaPreparada.setInt(10, entity.getNumeroDocumento());
-            sentenciaPreparada.setObject(11, id);
+            sentenciaPreparada.setLong(10, entity.getNumeroDocumento());
+            sentenciaPreparada.setLong(11, entity.getNumeroTelefono());
+            sentenciaPreparada.setObject(12, id);
             sentenciaPreparada.executeUpdate();
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de modificar la informacion del nuevo proveedor...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un UPDATE en la tabla proveedor, para tener mas detalles revise el log de errores... ";
+            var mensajeUsuario = "se ha presentado un problema tratando de modificar la informacion del proveedor...";
+            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un UPDATE en la tabla proveedor... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de modificar la informacion del nuevo proveedor...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un UPDATE en la tabla proveedor, para tener mas detalles, revise el log de errores... ";
+            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de modificar la informacion del proveedor...";
+            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Exception tratando de hacer un UPDATE en la tabla proveedor... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
     }
@@ -212,12 +216,12 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
             sentenciaPreparada.setObject(1, id);
             sentenciaPreparada.executeUpdate();
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de eliminar la informacion del nuevo proveedor...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un DELETE en la tabla proveedor, para tener mas detalles revise el log de errores... ";
+            var mensajeUsuario = "se ha presentado un problema tratando de eliminar la informacion del proveedor...";
+            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un DELETE en la tabla proveedor... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de eliminar la informacion del nuevo proveedor...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un DELETE en la tabla proveedor, para tener mas detalles, revise el log de errores... ";
+            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de eliminar la informacion del proveedor...";
+            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Exception tratando de hacer un DELETE en la tabla proveedor... ";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
     }

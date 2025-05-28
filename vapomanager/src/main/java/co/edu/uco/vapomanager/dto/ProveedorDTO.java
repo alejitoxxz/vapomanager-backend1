@@ -17,12 +17,12 @@ public final class ProveedorDTO {
     private boolean confirmacionCorreo;
     private String correoElectronico;
     private boolean estadoCuenta;
-    private int numeroTelefono;
+    private Long numeroTelefono;
     private String direccion;
     private CiudadDTO ciudad;
     private String descripcionDireccion;
     private TipoDocumentoDTO tipoDocumento;
-    private int numeroDocumento;
+    private Long numeroDocumento;
 
     public ProveedorDTO() {
         setId(UtilUUID.obtenerValorDefecto());
@@ -31,12 +31,12 @@ public final class ProveedorDTO {
         setConfirmacionCorreo(false);
         setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
         setEstadoCuenta(false);
-        setNumeroTelefono(0);
+        setNumeroTelefono(0L);
         setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setCiudad(new CiudadDTO());
         setDescripcionDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setTipoDocumento(new TipoDocumentoDTO());
-        setNumeroDocumento(0);
+        setNumeroDocumento(0L);
     }
 
     public ProveedorDTO(final UUID id,
@@ -45,12 +45,12 @@ public final class ProveedorDTO {
                        final boolean confirmacionCorreo,
                        final String correoElectronico,
                        final boolean estadoCuenta,
-                       final int numeroTelefono,
+                       final Long numeroTelefono,
                        final String direccion,
                        final CiudadDTO ciudad,
                        final String descripcionDireccion,
                        final TipoDocumentoDTO tipoDocumento,
-                       final int numeroDocumento) {
+                       final Long numeroDocumento) {
         setId(id);
         setNombreEmpresa(nombreEmpresa);
         setConfirmacionTelefono(confirmacionTelefono);
@@ -123,11 +123,11 @@ public final class ProveedorDTO {
         return this;
     }
 
-    public int getNumeroTelefono() {
+    public Long getNumeroTelefono() {
         return numeroTelefono;
     }
 
-    public ProveedorDTO setNumeroTelefono(final int numeroTelefono) {
+    public ProveedorDTO setNumeroTelefono(final Long numeroTelefono) {
         this.numeroTelefono = UtilNumero.obtenerValorDefecto(numeroTelefono);
         return this;
     }
@@ -168,11 +168,11 @@ public final class ProveedorDTO {
         return this;
     }
 
-    public int getNumeroDocumento() {
+    public Long getNumeroDocumento() {
         return numeroDocumento;
     }
 
-    public ProveedorDTO setNumeroDocumento(final int numeroDocumento) {
+    public ProveedorDTO setNumeroDocumento(final Long numeroDocumento) {
         this.numeroDocumento = numeroDocumento;
         return this;
     }

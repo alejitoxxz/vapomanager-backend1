@@ -3,10 +3,10 @@ package co.edu.uco.vapomanager.businesslogic.businesslogic.domain;
 import java.util.UUID;
 
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilBooleano;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilNumero;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilObjeto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilTexto;
 import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilNumero;
 
 public final class ProveedorDomain {
 
@@ -18,12 +18,12 @@ public final class ProveedorDomain {
     private boolean confirmacionCorreo;
     private String correoElectronico;
     private boolean estadoCuenta;
-    private int numeroTelefono;
+    private Long numeroTelefono;
     private String direccion;
     private CiudadDomain ciudad;
     private String descripcionDireccion;
     private TipoDocumentoDomain tipoDocumento;
-    private int numeroDocumento;
+    private Long numeroDocumento;
 
     public ProveedorDomain() {
         setId(UtilUUID.obtenerValorDefecto());
@@ -32,12 +32,12 @@ public final class ProveedorDomain {
         setConfirmacionCorreo(false);
         setCorreoElectronico(UtilTexto.getInstance().obtenerValorDefecto());
         setEstadoCuenta(false);
-        setNumeroTelefono(0);
+        setNumeroTelefono(0L);
         setDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setCiudad(new CiudadDomain());
         setDescripcionDireccion(UtilTexto.getInstance().obtenerValorDefecto());
         setTipoDocumento(new TipoDocumentoDomain());
-        setNumeroDocumento(0);
+        setNumeroDocumento(0L);
     }
 
     public ProveedorDomain(
@@ -47,12 +47,12 @@ public final class ProveedorDomain {
         boolean confirmacionCorreo,
         String correoElectronico,
         boolean estadoCuenta,
-        int numeroTelefono,
+        Long numeroTelefono,
         String direccion,
         CiudadDomain ciudad,
         String descripcionDireccion,
         TipoDocumentoDomain tipoDocumento,
-        int numeroDocumento
+        Long numeroDocumento
     ) {
         setId(id);
         setNombreEmpresa(nombreEmpresa);
@@ -75,26 +75,17 @@ public final class ProveedorDomain {
         boolean confirmacionCorreo,
         String correoElectronico,
         boolean estadoCuenta,
-        int numeroTelefono,
+        Long numeroTelefono,
         String direccion,
         CiudadDomain ciudad,
         String descripcionDireccion,
         TipoDocumentoDomain tipoDocumento,
-        int numeroDocumento
+        Long numeroDocumento
     ) {
         return new ProveedorDomain(
-            id,
-            nombreEmpresa,
-            confirmacionTelefono,
-            confirmacionCorreo,
-            correoElectronico,
-            estadoCuenta,
-            numeroTelefono,
-            direccion,
-            ciudad,
-            descripcionDireccion,
-            tipoDocumento,
-            numeroDocumento
+            id, nombreEmpresa, confirmacionTelefono, confirmacionCorreo,
+            correoElectronico, estadoCuenta, numeroTelefono, direccion,
+            ciudad, descripcionDireccion, tipoDocumento, numeroDocumento
         );
     }
 
@@ -156,11 +147,11 @@ public final class ProveedorDomain {
         return this;
     }
 
-    public int getNumeroTelefono() {
+    public Long getNumeroTelefono() {
         return numeroTelefono;
     }
 
-    public ProveedorDomain setNumeroTelefono(int numeroTelefono) {
+    public ProveedorDomain setNumeroTelefono(Long numeroTelefono) {
         this.numeroTelefono = UtilNumero.obtenerValorDefecto(numeroTelefono);
         return this;
     }
@@ -201,12 +192,12 @@ public final class ProveedorDomain {
         return this;
     }
 
-    public int getNumeroDocumento() {
+    public Long getNumeroDocumento() {
         return numeroDocumento;
     }
 
-    public ProveedorDomain setNumeroDocumento(int numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
+    public ProveedorDomain setNumeroDocumento(Long numeroDocumento) {
+        this.numeroDocumento = UtilNumero.obtenerValorDefecto(numeroDocumento);
         return this;
     }
 }
