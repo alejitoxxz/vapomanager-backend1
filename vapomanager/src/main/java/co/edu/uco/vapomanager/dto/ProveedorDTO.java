@@ -29,7 +29,7 @@ public final class ProveedorDTO {
         setNombreEmpresa(UtilTexto.getInstance().obtenerValorDefecto());
         setConfirmacionTelefono(false);
         setConfirmacionCorreo(false);
-        setCorreoElectronico(UtilCorreo.obtenerValorDefecto(null));
+        setCorreoElectronico(UtilTexto.getInstance().obtenerValorDefecto());
         setEstadoCuenta(false);
         setNumeroTelefono(0L);
         setDireccion(UtilTexto.getInstance().obtenerValorDefecto());

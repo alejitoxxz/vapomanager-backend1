@@ -6,10 +6,7 @@ import co.edu.uco.vapomanager.crosscutting.excepciones.VapomanagerException;
 import co.edu.uco.vapomanager.data.dao.entity.administrador.AdministradorDAO;
 import co.edu.uco.vapomanager.entity.AdministradorEntity;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,41 +14,23 @@ import java.util.UUID;
 
 public class AdministradorPostgreSQLDAO implements AdministradorDAO {
 
-    private final DataSource dataSource;
+    private final Connection conexion;
 
-    public AdministradorPostgreSQLDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    private Connection obtenerConexion() throws VapomanagerException {
-        try {
-            return dataSource.getConnection();
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de obtener la conexion a la base de datos para la tabla administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLException tratando de obtener la conexion para ejecutar operaciones sobre la tabla administrador...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        }
+    public AdministradorPostgreSQLDAO(Connection conexion) {
+        this.conexion = conexion;
     }
 
     @Override
     public void create(AdministradorEntity entity) throws VapomanagerException {
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("INSERT INTO administrador(id, correo) VALUES (?, ?)");
+        var sentenciaSQL = new StringBuilder("INSERT INTO administrador(id, correo) VALUES (?, ?)");
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-
+        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
             sentenciaPreparada.setObject(1, entity.getId());
             sentenciaPreparada.setString(2, entity.getCorreo());
             sentenciaPreparada.executeUpdate();
-
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de registrar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un INSERT en la tabla administrador, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de registrar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un INSERT en la tabla administrador, para tener mas detalles, revise el log de errores... ";
+            var mensajeUsuario = "Se ha presentado un problema tratando de registrar la información del nuevo administrador...";
+            var mensajeTecnico = "Excepción SQL al hacer INSERT en la tabla administrador.";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
     }
@@ -59,11 +38,9 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
     @Override
     public List<AdministradorEntity> listByFilter(AdministradorEntity filter) throws VapomanagerException {
         var listaResultados = new ArrayList<AdministradorEntity>();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, correo FROM administrador ORDER BY correo ASC");
+        var sentenciaSQL = new StringBuilder("SELECT id, correo FROM administrador ORDER BY correo ASC");
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
+        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString());
              var cursorResultados = sentenciaPreparada.executeQuery()) {
 
             while (cursorResultados.next()) {
@@ -74,12 +51,8 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
             }
 
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los administradores...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla administrador para consultar todos los registros...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla administrador, para consultar todos los registros... ";
+            var mensajeUsuario = "Se ha presentado un problema tratando de consultar la información de los administradores...";
+            var mensajeTecnico = "Excepción SQL al hacer SELECT en la tabla administrador.";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
 
@@ -94,12 +67,9 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
     @Override
     public AdministradorEntity listById(UUID id) throws VapomanagerException {
         var administradorRetorno = new AdministradorEntity();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, correo FROM administrador WHERE id = ?");
+        var sentenciaSQL = new StringBuilder("SELECT id, correo FROM administrador WHERE id = ?");
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-
+        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
             sentenciaPreparada.setObject(1, id);
 
             try (var cursorResultados = sentenciaPreparada.executeQuery()) {
@@ -108,14 +78,9 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
                     administradorRetorno.setCorreo(cursorResultados.getString("correo"));
                 }
             }
-
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar el administrador con el identificador deseado la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla administrador por id, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla administrador, para tener mas detalles, revise el log de errores... ";
+            var mensajeUsuario = "Se ha presentado un problema consultando el administrador con el ID deseado...";
+            var mensajeTecnico = "Excepción SQL al hacer SELECT por ID en la tabla administrador.";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
 
@@ -124,45 +89,29 @@ public class AdministradorPostgreSQLDAO implements AdministradorDAO {
 
     @Override
     public void update(UUID id, AdministradorEntity entity) throws VapomanagerException {
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("UPDATE administrador SET correo = ? WHERE id = ?");
+        var sentenciaSQL = new StringBuilder("UPDATE administrador SET correo = ? WHERE id = ?");
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-
+        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
             sentenciaPreparada.setString(1, entity.getCorreo());
             sentenciaPreparada.setObject(2, id);
             sentenciaPreparada.executeUpdate();
-
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de modificar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un UPDATE en la tabla administrador, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de modificar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un UPDATE en la tabla administrador, para tener mas detalles, revise el log de errores... ";
+            var mensajeUsuario = "Se ha presentado un problema modificando la información del administrador...";
+            var mensajeTecnico = "Excepción SQL al hacer UPDATE en la tabla administrador.";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
     }
 
     @Override
     public void delete(UUID id) throws VapomanagerException {
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("DELETE FROM administrador WHERE id = ?");
+        var sentenciaSQL = new StringBuilder("DELETE FROM administrador WHERE id = ?");
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
-
+        try (var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
             sentenciaPreparada.setObject(1, id);
             sentenciaPreparada.executeUpdate();
-
         } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de eliminar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un DELETE en la tabla administrador, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de eliminar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un DELETE en la tabla administrador, para tener mas detalles, revise el log de errores... ";
+            var mensajeUsuario = "Se ha presentado un problema eliminando la información del administrador...";
+            var mensajeTecnico = "Excepción SQL al hacer DELETE en la tabla administrador.";
             throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
         }
     }

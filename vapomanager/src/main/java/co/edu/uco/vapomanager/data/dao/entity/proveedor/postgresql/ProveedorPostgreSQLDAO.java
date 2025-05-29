@@ -17,10 +17,10 @@ import java.util.UUID;
 
 public class ProveedorPostgreSQLDAO implements ProveedorDAO {
 
-    private final DataSource dataSource;
+    private final Connection conexion;
 
-    public ProveedorPostgreSQLDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public ProveedorPostgreSQLDAO(Connection conexion) {
+        this.conexion = conexion;
     }
 
     @Override
@@ -43,8 +43,7 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """);
 
-        try (Connection conexion = dataSource.getConnection();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        try (var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
 
             sentenciaPreparada.setObject(1, entity.getId());
             sentenciaPreparada.setString(2, entity.getNombreEmpresa());
@@ -76,7 +75,7 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("SELECT id, nombre_empresa, confirmacion_telefono, confirmacion_correo, correo_electronico, estado_cuenta, direccion, ciudad_id, descripcion_direccion, tipo_documento_id, numero_documento, numero_telefono FROM proveedor ORDER BY nombre_empresa ASC");
 
-        try (Connection conexion = dataSource.getConnection();
+        try (
              var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
              var cursorResultados = sentenciaPreparada.executeQuery()) {
 
@@ -120,7 +119,7 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("SELECT id, nombre_empresa, confirmacion_telefono, confirmacion_correo, correo_electronico, estado_cuenta, direccion, ciudad_id, descripcion_direccion, tipo_documento_id, numero_documento, numero_telefono FROM proveedor WHERE id = ?");
 
-        try (Connection conexion = dataSource.getConnection();
+        try (
              var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
             sentenciaPreparada.setObject(1, id);
             try (var cursorResultados = sentenciaPreparada.executeQuery()) {
@@ -158,7 +157,83 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
 
     @Override
     public List<ProveedorEntity> listByFilter(ProveedorEntity filter) throws VapomanagerException {
-        return listAll();
+        var listaResultados = new ArrayList<ProveedorEntity>();
+        var sentenciaSQL = new StringBuilder();
+        sentenciaSQL.append("""
+            SELECT id, nombre_empresa, confirmacion_telefono, confirmacion_correo,
+                   correo_electronico, estado_cuenta, direccion, ciudad_id,
+                   descripcion_direccion, tipo_documento_id, numero_documento, numero_telefono
+            FROM proveedor
+            WHERE 1=1
+        """);
+
+        var parametros = new ArrayList<Object>();
+
+        if (filter != null) {
+            if (filter.getCorreoElectronico() != null && !filter.getCorreoElectronico().isBlank()) {
+                sentenciaSQL.append(" AND correo_electronico ILIKE ?");
+                parametros.add(filter.getCorreoElectronico());
+            }
+
+            if (filter.getNumeroDocumento() > 0) {
+                sentenciaSQL.append(" AND numero_documento = ?");
+                parametros.add(filter.getNumeroDocumento());
+            }
+
+            if (filter.getNumeroTelefono() > 0) {
+                sentenciaSQL.append(" AND numero_telefono = ?");
+                parametros.add(filter.getNumeroTelefono());
+            }
+        }
+
+        sentenciaSQL.append(" ORDER BY nombre_empresa ASC");
+
+        try (
+             var sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())) {
+
+            for (int i = 0; i < parametros.size(); i++) {
+                sentenciaPreparada.setObject(i + 1, parametros.get(i));
+            }
+
+            try (var cursorResultados = sentenciaPreparada.executeQuery()) {
+                while (cursorResultados.next()) {
+                    var proveedor = new ProveedorEntity();
+                    proveedor.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
+                    proveedor.setNombreEmpresa(cursorResultados.getString("nombre_empresa"));
+                    proveedor.setConfirmacionTelefono(cursorResultados.getBoolean("confirmacion_telefono"));
+                    proveedor.setConfirmacionCorreo(cursorResultados.getBoolean("confirmacion_correo"));
+                    proveedor.setCorreoElectronico(cursorResultados.getString("correo_electronico"));
+                    proveedor.setEstadoCuenta(cursorResultados.getBoolean("estado_cuenta"));
+                    proveedor.setDireccion(cursorResultados.getString("direccion"));
+
+                    var ciudad = new CiudadEntity();
+                    ciudad.setId(UtilUUID.convertirAUUID(cursorResultados.getString("ciudad_id")));
+                    proveedor.setCiudad(ciudad);
+
+                    proveedor.setDescripcionDireccion(cursorResultados.getString("descripcion_direccion"));
+
+                    var tipoDoc = new TipoDocumentoEntity();
+                    tipoDoc.setId(UtilUUID.convertirAUUID(cursorResultados.getString("tipo_documento_id")));
+                    proveedor.setTipoDocumento(tipoDoc);
+
+                    proveedor.setNumeroDocumento(cursorResultados.getLong("numero_documento"));
+                    proveedor.setNumeroTelefono(cursorResultados.getLong("numero_telefono"));
+
+                    listaResultados.add(proveedor);
+                }
+            }
+
+        } catch (SQLException exception) {
+            var mensajeUsuario = "Se ha presentado un problema tratando de consultar proveedores por filtro...";
+            var mensajeTecnico = "Excepción SQL al ejecutar el SELECT con filtros dinámicos en la tabla proveedor...";
+            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (Exception exception) {
+            var mensajeUsuario = "Ocurrió un problema inesperado al consultar proveedores por filtro...";
+            var mensajeTecnico = "Excepción NO CONTROLADA en listByFilter de proveedor...";
+            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        }
+
+        return listaResultados;
     }
 
     @Override
@@ -180,7 +255,7 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
             WHERE id = ?
             """);
 
-        try (Connection conexion = dataSource.getConnection();
+        try (
              var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
             sentenciaPreparada.setString(1, entity.getNombreEmpresa());
             sentenciaPreparada.setBoolean(2, entity.isConfirmacionTelefono());
@@ -211,7 +286,7 @@ public class ProveedorPostgreSQLDAO implements ProveedorDAO {
         var senteciaSQL = new StringBuilder();
         senteciaSQL.append("DELETE FROM proveedor WHERE id = ?");
 
-        try (Connection conexion = dataSource.getConnection();
+        try (
              var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
             sentenciaPreparada.setObject(1, id);
             sentenciaPreparada.executeUpdate();

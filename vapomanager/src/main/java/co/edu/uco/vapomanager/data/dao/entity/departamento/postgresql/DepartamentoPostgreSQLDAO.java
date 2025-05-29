@@ -17,10 +17,10 @@ import java.util.UUID;
 
 public class DepartamentoPostgreSQLDAO implements DepartamentoDAO {
 
-    private final DataSource dataSource;
+    private final Connection conexion;
 
-    public DepartamentoPostgreSQLDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public DepartamentoPostgreSQLDAO(Connection conexion) {
+        this.conexion = conexion;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO {
         senteciaSQL.append("SELECT id, nombre FROM departamento ORDER BY nombre ASC");
 
         try (
-            Connection conexion = dataSource.getConnection();
+            
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
             ResultSet cursorResultados = sentenciaPreparada.executeQuery()
         ) {
@@ -61,7 +61,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO {
         senteciaSQL.append("SELECT id, nombre FROM departamento ORDER BY nombre ASC");
 
         try (
-            Connection conexion = dataSource.getConnection();
+            
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
             ResultSet cursorResultados = sentenciaPreparada.executeQuery()
         ) {
@@ -92,7 +92,7 @@ public class DepartamentoPostgreSQLDAO implements DepartamentoDAO {
         senteciaSQL.append("SELECT id, nombre FROM departamento WHERE id = ?");
 
         try (
-            Connection conexion = dataSource.getConnection();
+            
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())
         ) {
             sentenciaPreparada.setObject(1, id);

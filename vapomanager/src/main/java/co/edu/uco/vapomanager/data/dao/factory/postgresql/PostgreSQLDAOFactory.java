@@ -53,6 +53,7 @@ public class PostgreSQLDAOFactory extends DAOFactory {
     @Override
     public void iniciarTransaccion() throws VapomanagerException {
         try {
+            System.out.println("🚀 Iniciando transacción");
             asegurarConexionAbierta();
             conexion.setAutoCommit(false);
             transaccionEstaIniciada = true;
@@ -68,6 +69,7 @@ public class PostgreSQLDAOFactory extends DAOFactory {
     @Override
     public void confirmarTransaccion() throws VapomanagerException {
         try {
+            System.out.println("✅ Confirmando transacción");
             asegurarConexionAbierta();
             asegurarTransaccionIniciada();
             conexion.commit();
@@ -83,6 +85,7 @@ public class PostgreSQLDAOFactory extends DAOFactory {
     @Override
     public void cancelarTransaccion() throws VapomanagerException {
         try {
+            System.out.println("💥 Cancelando transacción");
             asegurarConexionAbierta();
             asegurarTransaccionIniciada();
             conexion.rollback();
@@ -98,6 +101,7 @@ public class PostgreSQLDAOFactory extends DAOFactory {
     @Override
     public void cerrarConexion() throws VapomanagerException {
         try {
+            System.out.println("🔒 Cerrando conexión");
             asegurarConexionAbierta();
             conexion.close();
         } catch (VapomanagerException exception) {
@@ -128,30 +132,30 @@ public class PostgreSQLDAOFactory extends DAOFactory {
     @Override
     public DepartamentoDAO getDepartamentoDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new DepartamentoPostgreSQLDAO(dataSource);
+        return new DepartamentoPostgreSQLDAO(conexion);
     }
 
     @Override
     public CiudadDAO getCiudadDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new CiudadPostgreSQLDAO(dataSource);
+        return new CiudadPostgreSQLDAO(conexion);
     }
 
     @Override
     public TipoDocumentoDAO getTipoDocumentoDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new TipoDocumentoPostgreSQLDAO(dataSource);
+        return new TipoDocumentoPostgreSQLDAO(conexion);
     }
 
     @Override
     public ProveedorDAO getProveedorDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new ProveedorPostgreSQLDAO(dataSource);
+        return new ProveedorPostgreSQLDAO(conexion);
     }
 
     @Override
     public AdministradorDAO getAdministradorDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new AdministradorPostgreSQLDAO(dataSource);
+        return new AdministradorPostgreSQLDAO(conexion);
     }
 }
