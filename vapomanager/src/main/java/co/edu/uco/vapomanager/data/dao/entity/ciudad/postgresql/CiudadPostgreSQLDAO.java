@@ -18,10 +18,10 @@ import java.util.UUID;
 
 public class CiudadPostgreSQLDAO implements CiudadDAO {
 
-    private final Connection conexion;
+    private final DataSource dataSource;
 
-    public CiudadPostgreSQLDAO(Connection conexion) {
-        this.conexion = conexion;
+    public CiudadPostgreSQLDAO(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class CiudadPostgreSQLDAO implements CiudadDAO {
         senteciaSQL.append("SELECT id, nombre, departamento_id FROM ciudad ORDER BY nombre ASC");
 
         try (
-            
+            Connection conexion = dataSource.getConnection();
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
             ResultSet cursorResultados = sentenciaPreparada.executeQuery()
         ) {
@@ -82,7 +82,7 @@ public class CiudadPostgreSQLDAO implements CiudadDAO {
         sentenciaSQL.append(" ORDER BY c.nombre ASC");
 
         try (
-            
+            Connection conexion = dataSource.getConnection();
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())
         ) {
             int posicion = 1;
@@ -128,7 +128,7 @@ public class CiudadPostgreSQLDAO implements CiudadDAO {
         senteciaSQL.append("SELECT id, nombre, departamento_id FROM ciudad WHERE id = ?");
 
         try (
-            
+            Connection conexion = dataSource.getConnection();
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())
         ) {
             sentenciaPreparada.setObject(1, id);

@@ -17,10 +17,10 @@ import java.util.UUID;
 
 public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
 
-    private final Connection conexion;
+    private final DataSource dataSource;
 
-    public TipoDocumentoPostgreSQLDAO(Connection conexion) {
-        this.conexion = conexion;
+    public TipoDocumentoPostgreSQLDAO(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
         senteciaSQL.append("SELECT id, tipo_documento FROM tipo_documento");
 
         try (
-            
+            Connection conexion = dataSource.getConnection();
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
             ResultSet cursorResultados = sentenciaPreparada.executeQuery()
         ) {
@@ -60,7 +60,7 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
         senteciaSQL.append("SELECT id, tipo_documento FROM tipo_documento ORDER BY tipo_documento ASC");
 
         try (
-            
+            Connection conexion = dataSource.getConnection();
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
             ResultSet cursorResultados = sentenciaPreparada.executeQuery()
         ) {
@@ -91,7 +91,7 @@ public class TipoDocumentoPostgreSQLDAO implements TipoDocumentoDAO {
         senteciaSQL.append("SELECT id, tipo_documento FROM tipo_documento WHERE id = ?");
 
         try (
-            
+            Connection conexion = dataSource.getConnection();
             PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())
         ) {
             sentenciaPreparada.setObject(1, id);
