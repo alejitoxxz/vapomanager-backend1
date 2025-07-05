@@ -6,7 +6,6 @@ import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 import co.edu.uco.vapomanager.data.dao.entity.departamento.DepartamentoDAO;
 import co.edu.uco.vapomanager.entity.DepartamentoEntity;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,104 +14,121 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class DepartamentoPostgreSQLDAO implements DepartamentoDAO {
+public final class DepartamentoPostgreSQLDAO implements DepartamentoDAO {
 
-    private final DataSource dataSource;
+    
+    private final Connection conexion;
 
-    public DepartamentoPostgreSQLDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public DepartamentoPostgreSQLDAO(final Connection conexion) {
+        this.conexion = conexion;
     }
 
+    
     @Override
     public List<DepartamentoEntity> listAll() throws VapomanagerException {
-        var listaResultados = new ArrayList<DepartamentoEntity>();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, nombre FROM departamento ORDER BY nombre ASC");
 
-        try (
-            Connection conexion = dataSource.getConnection();
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
-            ResultSet cursorResultados = sentenciaPreparada.executeQuery()
-        ) {
-            while (cursorResultados.next()) {
-                var departamentoRetorno = new DepartamentoEntity();
-                departamentoRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                departamentoRetorno.setNombre(cursorResultados.getString("nombre"));
+        final List<DepartamentoEntity> resultados = new ArrayList<>();
+        final String sql = "SELECT id, nombre FROM departamento ORDER BY nombre ASC";
 
-                listaResultados.add(departamentoRetorno);
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                var dto = new DepartamentoEntity();
+                dto.setId(UtilUUID.convertirAUUID(rs.getString("id")));
+                dto.setNombre(rs.getString("nombre"));
+                resultados.add(dto);
             }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los departamentos...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla departamento para consultar todos los registros...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo departamento...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla departamento, para consultar todos los registros... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Error al consultar departamentos.",
+                "SQLException en SELECT * de departamento.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Error inesperado al consultar departamentos.",
+                "Excepción NO CONTROLADA en listAll.", e);
         }
 
-        return listaResultados;
+        return resultados;
     }
 
+    
     @Override
-    public List<DepartamentoEntity> listByFilter(DepartamentoEntity filter) throws VapomanagerException {
-        var listaResultados = new ArrayList<DepartamentoEntity>();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, nombre FROM departamento ORDER BY nombre ASC");
+    public List<DepartamentoEntity> listByFilter(final DepartamentoEntity filter) throws VapomanagerException {
 
-        try (
-            Connection conexion = dataSource.getConnection();
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
-            ResultSet cursorResultados = sentenciaPreparada.executeQuery()
-        ) {
-            while (cursorResultados.next()) {
-                var departamentoRetorno = new DepartamentoEntity();
-                departamentoRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                departamentoRetorno.setNombre(cursorResultados.getString("nombre"));
+        final List<DepartamentoEntity> resultados = new ArrayList<>();
+        final StringBuilder sql = new StringBuilder("""
+            SELECT id, nombre
+              FROM departamento
+             WHERE 1 = 1
+            """);
 
-                listaResultados.add(departamentoRetorno);
-            }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los departamentos...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla departamento para consultar todos los registros...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo departamento...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla departamento, para consultar todos los registros... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        final List<Object> params = new ArrayList<>();
+
+        if (filter != null && filter.getNombre() != null && !filter.getNombre().isBlank()) {
+            sql.append(" AND nombre ILIKE ?");
+            params.add('%' + filter.getNombre().trim() + '%');
         }
 
-        return listaResultados;
-    }
+        sql.append(" ORDER BY nombre ASC");
 
-    @Override
-    public DepartamentoEntity listById(UUID id) throws VapomanagerException {
-        var departamentoRetorno = new DepartamentoEntity();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, nombre FROM departamento WHERE id = ?");
+        try (PreparedStatement ps = conexion.prepareStatement(sql.toString())) {
 
-        try (
-            Connection conexion = dataSource.getConnection();
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())
-        ) {
-            sentenciaPreparada.setObject(1, id);
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
 
-            try (ResultSet cursorResultados = sentenciaPreparada.executeQuery()) {
-                if (cursorResultados.next()) {
-                    departamentoRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                    departamentoRetorno.setNombre(cursorResultados.getString("nombre"));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    var dto = new DepartamentoEntity();
+                    dto.setId(UtilUUID.convertirAUUID(rs.getString("id")));
+                    dto.setNombre(rs.getString("nombre"));
+                    resultados.add(dto);
                 }
             }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar el departamento con el identificador deseado la informacion del nuevo departamento...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla departamento por id, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo departamento...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla departamento, para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Error al filtrar departamentos.",
+                "SQLException en SELECT con filtro de departamento.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Error inesperado al filtrar departamentos.",
+                "Excepción NO CONTROLADA en listByFilter.", e);
         }
 
-        return departamentoRetorno;
+        return resultados;
+    }
+
+    
+    @Override
+    public DepartamentoEntity listById(final UUID id) throws VapomanagerException {
+
+        final String sql = "SELECT id, nombre FROM departamento WHERE id = ?";
+        DepartamentoEntity dto = null;
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setObject(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    dto = new DepartamentoEntity();
+                    dto.setId(UtilUUID.convertirAUUID(rs.getString("id")));
+                    dto.setNombre(rs.getString("nombre"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Error al consultar departamento por ID.",
+                "SQLException en SELECT por ID de departamento.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Error inesperado al consultar departamento por ID.",
+                "Excepción NO CONTROLADA en listById.", e);
+        }
+
+        return dto;
     }
 }

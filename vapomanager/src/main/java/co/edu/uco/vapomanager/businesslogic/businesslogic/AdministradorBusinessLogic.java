@@ -8,8 +8,8 @@ import co.edu.uco.vapomanager.crosscutting.excepciones.VapomanagerException;
 
 public interface AdministradorBusinessLogic {
 
-    void registrarNuevoAdministrador(AdministradorDomain pais)throws VapomanagerException;
-    void modificarAdministradorExistente(UUID id, AdministradorDomain pais)throws VapomanagerException;
+    void registrarNuevoAdministrador(AdministradorDomain administrador)throws VapomanagerException;
+    void modificarAdministradorExistente(UUID id, AdministradorDomain administrador)throws VapomanagerException;
     void darBajaDefinitivamenteAdministradorExistente(UUID id)throws VapomanagerException;
     AdministradorDomain consultarAdministradorPorId(UUID id)throws VapomanagerException;
     List<AdministradorDomain> consultarAdministradores(AdministradorDomain filtro)throws VapomanagerException;

@@ -13,40 +13,64 @@ import co.edu.uco.vapomanager.data.dao.entity.proveedor.postgresql.ProveedorPost
 import co.edu.uco.vapomanager.data.dao.entity.tipodocumento.TipoDocumentoDAO;
 import co.edu.uco.vapomanager.data.dao.entity.tipodocumento.postgresql.TipoDocumentoPostgreSQLDAO;
 import co.edu.uco.vapomanager.data.dao.factory.DAOFactory;
-
 import javax.sql.DataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class PostgreSQLDAOFactory extends DAOFactory {
 
-    private final DataSource dataSource;
+    private static final DataSource dataSource;
+    static {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/vapomanager");
+        config.setUsername("postgres");
+        config.setPassword("123456");
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(5);
+        config.setIdleTimeout(600_000);
+        config.setMaxLifetime(1_800_000);
+        config.setConnectionTimeout(30_000);
+        dataSource = new HikariDataSource(config);
+    }
+
     private Connection conexion;
     private boolean transaccionEstaIniciada;
-    private boolean conexionEstaAbierta;
 
-    public PostgreSQLDAOFactory(DataSource dataSource) throws VapomanagerException {
-        this.dataSource = dataSource;
-        this.transaccionEstaIniciada = false;
-        this.conexionEstaAbierta = false;
+    public PostgreSQLDAOFactory() throws VapomanagerException {
         abrirConexion();
+        this.transaccionEstaIniciada = false;
     }
 
     @Override
     protected void abrirConexion() throws VapomanagerException {
-        var baseDatos = "vapomanager";
-        var servidor = "vapomanager.uco.edu.co";
         try {
-            conexion = dataSource.getConnection();
-            conexionEstaAbierta = true;
-        } catch (Exception exception) {
-            if (exception instanceof java.sql.SQLException) {
-                var mensajeUsuario = "se ha presentado un problema tratando de obtener la conexcion con la fuente de datos para llevar a cabo la accion deseada...";
-                var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de obtener la conexion con la base de datos " + baseDatos + " en el servidor " + servidor + " para tener mas detalles, revise el log de errores... ";
-                throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+            if (conexion == null || conexion.isClosed()) {
+                conexion = dataSource.getConnection();
+                conexion.setAutoCommit(true);
             }
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de obtener la conexcion con la fuente de datos para llevar a cabo la accion deseada...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Exeption tratando de obtener la conexion con la base de datos " + baseDatos + " en el servidor " + servidor + " para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema obteniendo la conexión con la base de datos.",
+                "SQLException al abrir la conexión a vapomanager en localhost.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema INESPERADO obteniendo la conexión con la base de datos.",
+                "Excepción NO CONTROLADA al abrir la conexión a vapomanager en localhost.", e);
+        }
+    }
+
+    private void asegurarConexionAbierta() throws VapomanagerException {
+        try {
+            if (conexion == null || conexion.isClosed()) {
+                conexion = dataSource.getConnection();
+                conexion.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "No fue posible abrir la conexión con la base de datos.",
+                "SQLException en asegurarConexionAbierta()", e);
         }
     }
 
@@ -56,12 +80,10 @@ public class PostgreSQLDAOFactory extends DAOFactory {
             asegurarConexionAbierta();
             conexion.setAutoCommit(false);
             transaccionEstaIniciada = true;
-        } catch (VapomanagerException exception) {
-            throw exception;
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de iniciar la transaccion con la fuente de datos para llevar a cabo la accion deseada...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de iniciar la transaccion sobre la conexion con la base de datos para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Problema al iniciar la transacción.",
+                "SQLException al hacer setAutoCommit(false).", e);
         }
     }
 
@@ -69,89 +91,86 @@ public class PostgreSQLDAOFactory extends DAOFactory {
     public void confirmarTransaccion() throws VapomanagerException {
         try {
             asegurarConexionAbierta();
-            asegurarTransaccionIniciada();
             conexion.commit();
-        } catch (VapomanagerException exception) {
-            throw exception;
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de confirmar la transaccion con la fuente de datos para llevar a cabo la accion deseada...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de confirmar la transaccion sobre la conexion con la base de datos para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Problema al confirmar la transacción.",
+                "SQLException al hacer commit().", e);
+        } finally {
+            transaccionEstaIniciada = false;
+            cerrarConexion();
         }
     }
 
     @Override
     public void cancelarTransaccion() throws VapomanagerException {
         try {
-            asegurarConexionAbierta();
-            asegurarTransaccionIniciada();
-            conexion.rollback();
-        } catch (VapomanagerException exception) {
-            throw exception;
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de cancelar la transaccion con la fuente de datos para llevar a cabo la accion deseada...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de cancelar la transaccion sobre la conexion con la base de datos para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+            if (transaccionEstaIniciada) {
+                asegurarConexionAbierta();
+                conexion.rollback();
+            }
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Problema al cancelar la transacción.",
+                "SQLException al hacer rollback().", e);
+        } finally {
+            transaccionEstaIniciada = false;
+            cerrarConexion();
         }
     }
 
     @Override
     public void cerrarConexion() throws VapomanagerException {
         try {
-            asegurarConexionAbierta();
-            conexion.close();
-        } catch (VapomanagerException exception) {
-            throw exception;
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de cerrar la conexion con la fuente de datos para llevar a cabo la accion deseada...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de cerrar la conexion sobre la base de datos para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+            if (estaConexionAbierta()) {
+                if (!conexion.getAutoCommit()) {
+                    conexion.setAutoCommit(true);
+                }
+                conexion.close();
+            }
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Problema al cerrar la conexión.",
+                "SQLException al cerrar la conexión.", e);
         }
     }
 
-    private void asegurarTransaccionIniciada() throws VapomanagerException {
-        if (!transaccionEstaIniciada) {
-            var mensajeUsuario = "se ha presentado un problema tratando gestionar la transaccion con la fuente de datos para llevar a cabo la accion deseada...";
-            var mensajeTecnico = "se intento gestionar(COMMIT/ROLLBACK) una transaccion que previamentre no fue iniciada.";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico);
-        }
-    }
-
-    private void asegurarConexionAbierta() throws VapomanagerException {
-        if (!conexionEstaAbierta) {
-            var mensajeUsuario = "se ha presentado un problema tratando llevar a cabo la operacion deseada con una conexion cerrada...";
-            var mensajeTecnico = "se intento llevar a cabo una operacion que requeria una conexion abierta, pero al momento de validarla estaa cerrada(COMMIT/ROLLBACK) una transaccion que previamentre no fue iniciada.";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico);
+    @Override
+    public boolean estaConexionAbierta() {
+        try {
+            return conexion != null && !conexion.isClosed();
+        } catch (SQLException e) {
+            return false;
         }
     }
 
     @Override
     public DepartamentoDAO getDepartamentoDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new DepartamentoPostgreSQLDAO(dataSource);
+        return new DepartamentoPostgreSQLDAO(conexion);
     }
 
     @Override
     public CiudadDAO getCiudadDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new CiudadPostgreSQLDAO(dataSource);
+        return new CiudadPostgreSQLDAO(conexion);
     }
 
     @Override
     public TipoDocumentoDAO getTipoDocumentoDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new TipoDocumentoPostgreSQLDAO(dataSource);
+        return new TipoDocumentoPostgreSQLDAO(conexion);
     }
 
     @Override
     public ProveedorDAO getProveedorDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new ProveedorPostgreSQLDAO(dataSource);
+        return new ProveedorPostgreSQLDAO(conexion);
     }
 
     @Override
     public AdministradorDAO getAdministradorDAO() throws VapomanagerException {
         asegurarConexionAbierta();
-        return new AdministradorPostgreSQLDAO(dataSource);
+        return new AdministradorPostgreSQLDAO(conexion);
     }
 }

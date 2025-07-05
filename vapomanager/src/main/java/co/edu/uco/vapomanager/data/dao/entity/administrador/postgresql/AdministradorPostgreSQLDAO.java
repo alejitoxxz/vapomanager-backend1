@@ -1,12 +1,11 @@
 package co.edu.uco.vapomanager.data.dao.entity.administrador.postgresql;
 
-import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 import co.edu.uco.vapomanager.crosscutting.excepciones.DataVapomanagerException;
 import co.edu.uco.vapomanager.crosscutting.excepciones.VapomanagerException;
+import co.edu.uco.vapomanager.crosscutting.utilitarios.UtilUUID;
 import co.edu.uco.vapomanager.data.dao.entity.administrador.AdministradorDAO;
 import co.edu.uco.vapomanager.entity.AdministradorEntity;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,155 +14,162 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AdministradorPostgreSQLDAO implements AdministradorDAO {
+public final class AdministradorPostgreSQLDAO implements AdministradorDAO {
 
-    private final DataSource dataSource;
+   
+    private final Connection conexion;
 
-    public AdministradorPostgreSQLDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public AdministradorPostgreSQLDAO(final Connection conexion) {
+        this.conexion = conexion;
     }
 
-    private Connection obtenerConexion() throws VapomanagerException {
-        try {
-            return dataSource.getConnection();
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de obtener la conexion a la base de datos para la tabla administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLException tratando de obtener la conexion para ejecutar operaciones sobre la tabla administrador...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+    
+    @Override
+    public void create(final AdministradorEntity entity) throws VapomanagerException {
+
+        final String sql = "INSERT INTO administrador(id, correo) VALUES (?, ?)";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setObject(1, entity.getId());
+            ps.setString(2, entity.getCorreo());
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema al registrar el administrador.",
+                "SQLException al INSERT en tabla administrador.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Ocurrió un problema INESPERADO al registrar el administrador.",
+                "Excepción NO CONTROLADA en INSERT de administrador.", e);
         }
     }
 
+    
     @Override
-    public void create(AdministradorEntity entity) throws VapomanagerException {
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("INSERT INTO administrador(id, correo) VALUES (?, ?)");
+    public List<AdministradorEntity> listByFilter(final AdministradorEntity filter) throws VapomanagerException {
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        final List<AdministradorEntity> resultados = new ArrayList<>();
+        final StringBuilder sql = new StringBuilder("""
+            SELECT id, correo
+              FROM administrador
+             WHERE 1 = 1
+            """);
 
-            sentenciaPreparada.setObject(1, entity.getId());
-            sentenciaPreparada.setString(2, entity.getCorreo());
-            sentenciaPreparada.executeUpdate();
+        final List<Object> params = new ArrayList<>();
 
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de registrar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un INSERT en la tabla administrador, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de registrar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un INSERT en la tabla administrador, para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        if (filter != null && filter.getCorreo() != null && !filter.getCorreo().isBlank()) {
+            sql.append(" AND correo ILIKE ?");
+            params.add('%' + filter.getCorreo().trim() + '%');
         }
-    }
 
-    @Override
-    public List<AdministradorEntity> listByFilter(AdministradorEntity filter) throws VapomanagerException {
-        var listaResultados = new ArrayList<AdministradorEntity>();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, correo FROM administrador ORDER BY correo ASC");
+        sql.append(" ORDER BY correo ASC");
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
-             var cursorResultados = sentenciaPreparada.executeQuery()) {
+        try (PreparedStatement ps = conexion.prepareStatement(sql.toString())) {
 
-            while (cursorResultados.next()) {
-                var admin = new AdministradorEntity();
-                admin.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                admin.setCorreo(cursorResultados.getString("correo"));
-                listaResultados.add(admin);
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
             }
 
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos los administradores...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla administrador para consultar todos los registros...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla administrador, para consultar todos los registros... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    var admin = new AdministradorEntity();
+                    admin.setId(UtilUUID.convertirAUUID(rs.getString("id")));
+                    admin.setCorreo(rs.getString("correo"));
+                    resultados.add(admin);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema al consultar administradores.",
+                "SQLException en SELECT con filtro de administrador.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Ocurrió un problema INESPERADO al consultar administradores.",
+                "Excepción NO CONTROLADA en listByFilter.", e);
         }
 
-        return listaResultados;
+        return resultados;
     }
 
+    
     @Override
     public List<AdministradorEntity> listAll() throws VapomanagerException {
         return listByFilter(new AdministradorEntity());
     }
 
+    
     @Override
-    public AdministradorEntity listById(UUID id) throws VapomanagerException {
-        var administradorRetorno = new AdministradorEntity();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, correo FROM administrador WHERE id = ?");
+    public AdministradorEntity listById(final UUID id) throws VapomanagerException {
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        final String sql = "SELECT id, correo FROM administrador WHERE id = ?";
+        AdministradorEntity admin = null;
 
-            sentenciaPreparada.setObject(1, id);
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setObject(1, id);
 
-            try (var cursorResultados = sentenciaPreparada.executeQuery()) {
-                if (cursorResultados.next()) {
-                    administradorRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                    administradorRetorno.setCorreo(cursorResultados.getString("correo"));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    admin = new AdministradorEntity();
+                    admin.setId(UtilUUID.convertirAUUID(rs.getString("id")));
+                    admin.setCorreo(rs.getString("correo"));
                 }
             }
 
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar el administrador con el identificador deseado la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla administrador por id, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla administrador, para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema al consultar administrador por ID.",
+                "SQLException en SELECT por ID de administrador.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema INESPERADO al consultar administrador por ID.",
+                "Excepción NO CONTROLADA en listById.", e);
         }
 
-        return administradorRetorno;
+        return admin;
     }
 
+    
     @Override
-    public void update(UUID id, AdministradorEntity entity) throws VapomanagerException {
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("UPDATE administrador SET correo = ? WHERE id = ?");
+    public void update(final UUID id, final AdministradorEntity entity) throws VapomanagerException {
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        final String sql = "UPDATE administrador SET correo = ? WHERE id = ?";
 
-            sentenciaPreparada.setString(1, entity.getCorreo());
-            sentenciaPreparada.setObject(2, id);
-            sentenciaPreparada.executeUpdate();
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, entity.getCorreo());
+            ps.setObject(2, id);
+            ps.executeUpdate();
 
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de modificar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un UPDATE en la tabla administrador, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de modificar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un UPDATE en la tabla administrador, para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema al modificar el administrador.",
+                "SQLException en UPDATE de administrador.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema INESPERADO al modificar el administrador.",
+                "Excepción NO CONTROLADA en update.", e);
         }
     }
 
+    
     @Override
-    public void delete(UUID id) throws VapomanagerException {
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("DELETE FROM administrador WHERE id = ?");
+    public void delete(final UUID id) throws VapomanagerException {
 
-        try (var conexion = obtenerConexion();
-             var sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())) {
+        final String sql = "DELETE FROM administrador WHERE id = ?";
 
-            sentenciaPreparada.setObject(1, id);
-            sentenciaPreparada.executeUpdate();
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setObject(1, id);
+            ps.executeUpdate();
 
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de eliminar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un DELETE en la tabla administrador, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de eliminar la informacion del nuevo administrador...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un DELETE en la tabla administrador, para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema al eliminar el administrador.",
+                "SQLException en DELETE de administrador.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Se presentó un problema INESPERADO al eliminar el administrador.",
+                "Excepción NO CONTROLADA en delete.", e);
         }
     }
 }

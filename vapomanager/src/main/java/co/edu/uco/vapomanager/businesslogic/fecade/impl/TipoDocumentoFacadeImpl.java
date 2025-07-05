@@ -22,8 +22,8 @@ public class TipoDocumentoFacadeImpl implements TipoDocumentoFacade {
     private final DAOFactory daoFactory;
     private final TipoDcumentoBusinessLogic tipoDocumentoBusinessLogic;
 
-    public TipoDocumentoFacadeImpl(final DataSource dataSource) throws VapomanagerException {
-        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL, dataSource);
+    public TipoDocumentoFacadeImpl() throws VapomanagerException {
+        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL);
         tipoDocumentoBusinessLogic = new TipoDcumentoBusinessLogicImpl(daoFactory);
     }
 

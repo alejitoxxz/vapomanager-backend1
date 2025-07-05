@@ -25,9 +25,9 @@ public class CiudadController {
 
     private final CiudadFacade ciudadFacade;
 
-    // Spring inyecta automáticamente el DataSource
-    public CiudadController(DataSource dataSource) throws VapomanagerException {
-        this.ciudadFacade = new CiudadFacadeImpl(dataSource);
+    
+    public CiudadController() throws VapomanagerException {
+        this.ciudadFacade = new CiudadFacadeImpl();
     }
 
     @GetMapping("/dummy")

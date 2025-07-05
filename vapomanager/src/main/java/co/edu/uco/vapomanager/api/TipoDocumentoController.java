@@ -24,8 +24,8 @@ public class TipoDocumentoController {
     private final TipoDocumentoFacade tipoDocumentoFacade;
 
     // Spring inyecta automáticamente el DataSource configurado
-    public TipoDocumentoController(DataSource dataSource) throws VapomanagerException {
-        this.tipoDocumentoFacade = new TipoDocumentoFacadeImpl(dataSource);
+    public TipoDocumentoController() throws VapomanagerException {
+        this.tipoDocumentoFacade = new TipoDocumentoFacadeImpl();
     }
 
     @GetMapping("/dummy")

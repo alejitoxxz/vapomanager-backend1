@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.sql.DataSource;
-
 import co.edu.uco.vapomanager.businesslogic.businesslogic.ProveedorBusinessLogic;
 import co.edu.uco.vapomanager.businesslogic.businesslogic.assembler.proveedor.dto.ProveedorDTOAssambler;
 import co.edu.uco.vapomanager.businesslogic.businesslogic.domain.ProveedorDomain;
@@ -17,109 +15,169 @@ import co.edu.uco.vapomanager.data.dao.factory.DAOFactory;
 import co.edu.uco.vapomanager.data.dao.factory.Factory;
 import co.edu.uco.vapomanager.dto.ProveedorDTO;
 
-public class ProveedorFacadeImpl implements ProveedorFacade {
+public final class ProveedorFacadeImpl implements ProveedorFacade {
 
+    
     private final DAOFactory daoFactory;
     private final ProveedorBusinessLogic proveedorBusinessLogic;
 
-    public ProveedorFacadeImpl(final DataSource dataSource) throws VapomanagerException {
-        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL, dataSource);
+    public ProveedorFacadeImpl() throws VapomanagerException {
+        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL);
         proveedorBusinessLogic = new ProveedorBusinessLogicImpl(daoFactory);
     }
 
+    
     @Override
     public void registrarNuevoProveedor(final ProveedorDTO proveedor) throws VapomanagerException {
+
         try {
             daoFactory.iniciarTransaccion();
-            var proveedorDomain = ProveedorDTOAssambler.getInstance().toDomain(proveedor);
+
+            ProveedorDomain proveedorDomain =
+                    ProveedorDTOAssambler.getInstance().toDomain(proveedor);
+
             proveedorBusinessLogic.registrarNuevoProveedor(proveedorDomain);
+
             daoFactory.confirmarTransaccion();
-        } catch (Exception exception) {
-            try { daoFactory.cancelarTransaccion(); } catch (Exception ignored) {}
-            if (exception instanceof VapomanagerException) throw exception;
+
+        } catch (VapomanagerException ex) {                       // Reglas de negocio, validaciones, etc.
+            intentarCancelarTransaccionSilencioso();
+            throw ex;                                             // Propaga intacto
+
+        } catch (Exception ex) {                                  // Errores inesperados
+            intentarCancelarTransaccionSilencioso();
             throw BusinessLogicVapomanagerException.reportar(
-                "Se ha producido un problema INESPERADO tratando de registrar la información de un nuevo proveedor.",
-                "Se presentó una excepción NO CONTROLADA tratando de REGISTRAR la información de un nuevo proveedor. Para más detalles revise el log de errores.",
-                exception);
+                    "Se produjo un problema INESPERADO tratando de registrar un nuevo proveedor.",
+                    "Excepción NO CONTROLADA en registrarNuevoProveedor.", ex);
+
         } finally {
-            try { daoFactory.cerrarConexion(); } catch (Exception ignored) {}
+            intentarCerrarConexionSilencioso();
         }
     }
 
+    
     @Override
     public void modificarProveedorExistente(final UUID id, final ProveedorDTO proveedor) throws VapomanagerException {
+
         try {
             daoFactory.iniciarTransaccion();
-            var proveedorDomain = ProveedorDTOAssambler.getInstance().toDomain(proveedor);
+
+            ProveedorDomain proveedorDomain =
+                    ProveedorDTOAssambler.getInstance().toDomain(proveedor);
+
             proveedorBusinessLogic.modificarProveedorExistente(id, proveedorDomain);
+
             daoFactory.confirmarTransaccion();
-        } catch (Exception exception) {
-            try { daoFactory.cancelarTransaccion(); } catch (Exception ignored) {}
-            if (exception instanceof VapomanagerException) throw exception;
+
+        } catch (VapomanagerException ex) {
+            intentarCancelarTransaccionSilencioso();
+            throw ex;
+
+        } catch (Exception ex) {
+            intentarCancelarTransaccionSilencioso();
             throw BusinessLogicVapomanagerException.reportar(
-                "Se ha producido un problema inesperado tratando de modificar la información de un proveedor.",
-                "Se presentó una excepción NO CONTROLADA tratando de MODIFICAR la información de un proveedor existente. Para más detalles revise el log de errores.",
-                exception);
+                    "Se produjo un problema INESPERADO tratando de modificar un proveedor.",
+                    "Excepción NO CONTROLADA en modificarProveedorExistente.", ex);
+
         } finally {
-            try { daoFactory.cerrarConexion(); } catch (Exception ignored) {}
+            intentarCerrarConexionSilencioso();
         }
     }
 
+    
     @Override
     public void darBajaDefinitivamenteProveedorExistente(final UUID id) throws VapomanagerException {
+
         try {
             daoFactory.iniciarTransaccion();
+
             proveedorBusinessLogic.darBajaDefinitivamenteProveedorExistente(id);
+
             daoFactory.confirmarTransaccion();
-        } catch (Exception exception) {
-            try { daoFactory.cancelarTransaccion(); } catch (Exception ignored) {}
-            if (exception instanceof VapomanagerException) throw exception;
+
+        } catch (VapomanagerException ex) {
+            intentarCancelarTransaccionSilencioso();
+            throw ex;
+
+        } catch (Exception ex) {
+            intentarCancelarTransaccionSilencioso();
             throw BusinessLogicVapomanagerException.reportar(
-                "Se ha producido un problema inesperado tratando de eliminar la información de un proveedor.",
-                "Se presentó una excepción NO CONTROLADA tratando de DAR DE BAJA DEFINITIVAMENTE un proveedor existente. Para más detalles revise el log de errores.",
-                exception);
+                    "Se produjo un problema INESPERADO tratando de eliminar un proveedor.",
+                    "Excepción NO CONTROLADA en darBajaDefinitivamenteProveedorExistente.", ex);
+
         } finally {
-            try { daoFactory.cerrarConexion(); } catch (Exception ignored) {}
+            intentarCerrarConexionSilencioso();
         }
     }
 
+    
     @Override
     public ProveedorDTO consultarProveedorPorId(final UUID id) throws VapomanagerException {
+
         try {
-            var proveedorDomainResultado = proveedorBusinessLogic.consultarProveedorPorId(id);
-            return ProveedorDTOAssambler.getInstance().toDto(proveedorDomainResultado);
-        } catch (VapomanagerException excepcion) {
-            throw excepcion;
-        } catch (Exception exception) {
+            ProveedorDomain resultado =
+                    proveedorBusinessLogic.consultarProveedorPorId(id);
+
+            return ProveedorDTOAssambler.getInstance().toDto(resultado);
+
+        } catch (VapomanagerException ex) {
+            throw ex;
+
+        } catch (Exception ex) {
             throw BusinessLogicVapomanagerException.reportar(
-                "Se produjo un problema inesperado al consultar el proveedor.",
-                "Se presentó una excepción NO CONTROLADA tratando de consultar la información de un proveedor por ID.",
-                exception);
+                    "Se produjo un problema INESPERADO al consultar un proveedor.",
+                    "Excepción NO CONTROLADA en consultarProveedorPorId.", ex);
+
         } finally {
-            try { daoFactory.cerrarConexion(); } catch (Exception ignored) {}
+            intentarCerrarConexionSilencioso();
         }
     }
 
+    
     @Override
     public List<ProveedorDTO> consultarProveedores(final ProveedorDTO filtro) throws VapomanagerException {
-        try {
-            var proveedorDomainFiltro = ProveedorDTOAssambler.getInstance().toDomain(filtro);
-            var proveedorDomainResultado = proveedorBusinessLogic.consultarProveedores(proveedorDomainFiltro);
 
-            var proveedorDTOResultado = new ArrayList<ProveedorDTO>();
-            for (var proveedorDomain : proveedorDomainResultado) {
-                proveedorDTOResultado.add(ProveedorDTOAssambler.getInstance().toDto(proveedorDomain));
+        try {
+            ProveedorDomain filtroDomain =
+                    ProveedorDTOAssambler.getInstance().toDomain(filtro);
+
+            List<ProveedorDomain> dominios =
+                    proveedorBusinessLogic.consultarProveedores(filtroDomain);
+
+            List<ProveedorDTO> dtos = new ArrayList<>();
+            for (ProveedorDomain domain : dominios) {
+                dtos.add(ProveedorDTOAssambler.getInstance().toDto(domain));
             }
-            return proveedorDTOResultado;
-        } catch (VapomanagerException excepcion) {
-            throw excepcion;
-        } catch (Exception exception) {
+            return dtos;
+
+        } catch (VapomanagerException ex) {
+            throw ex;
+
+        } catch (Exception ex) {
             throw BusinessLogicVapomanagerException.reportar(
-                "Se ha producido un problema inesperado tratando de consultar proveedores.",
-                "Se presentó una excepción inesperada tratando de consultar proveedores con filtro.",
-                exception);
+                    "Se produjo un problema INESPERADO al consultar proveedores.",
+                    "Excepción NO CONTROLADA en consultarProveedores.", ex);
+
         } finally {
-            try { daoFactory.cerrarConexion(); } catch (Exception ignored) {}
+            intentarCerrarConexionSilencioso();
+        }
+    }
+
+    private void intentarCancelarTransaccionSilencioso() {
+        try {
+            if (daoFactory.estaConexionAbierta()) {
+                daoFactory.cancelarTransaccion();
+            }
+        } catch (Exception e) {
+            
+        }
+    }
+
+    private void intentarCerrarConexionSilencioso() {
+        try {
+            daoFactory.cerrarConexion();
+        } catch (Exception e) {
+        	
         }
     }
 }

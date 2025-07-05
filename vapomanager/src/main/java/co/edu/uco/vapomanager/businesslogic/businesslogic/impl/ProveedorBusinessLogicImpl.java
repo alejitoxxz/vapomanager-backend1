@@ -24,34 +24,37 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
 
     @Override
     public void registrarNuevoProveedor(final ProveedorDomain proveedor) throws VapomanagerException {
+
         validarIntegridadInformacionRegistrarProveedor(proveedor);
         validarNoExistaProveedorConMismoID(proveedor.getId());
         validarNoExistaProveedorConMismoCorreo(proveedor.getCorreoElectronico());
         validarNoExistaProveedorConMismoTelefono(proveedor.getNumeroTelefono());
         validarNoExistaProveedorConMismoDocumento(proveedor.getNumeroDocumento());
 
-        var nuevoId = generarIdentificadorNuevoProveedor();
+        UUID nuevoId = generarIdentificadorNuevoProveedor();
 
-        var domainACrear = new ProveedorDomain(
-            nuevoId,
-            proveedor.getNombreEmpresa(),
-            proveedor.isConfirmacionTelefono(),
-            proveedor.isConfirmacionCorreo(),
-            proveedor.getCorreoElectronico(),
-            proveedor.isEstadoCuenta(),
-            proveedor.getNumeroTelefono(),
-            proveedor.getDireccion(),
-            proveedor.getCiudad(),
-            proveedor.getDescripcionDireccion(),
-            proveedor.getTipoDocumento(),
-            proveedor.getNumeroDocumento()
+        ProveedorDomain domainACrear = new ProveedorDomain(
+                nuevoId,
+                proveedor.getNombreEmpresa(),
+                proveedor.isConfirmacionTelefono(),
+                proveedor.isConfirmacionCorreo(),
+                proveedor.getCorreoElectronico(),
+                proveedor.isEstadoCuenta(),
+                proveedor.getNumeroTelefono(),
+                proveedor.getDireccion(),
+                proveedor.getCiudad(),
+                proveedor.getDescripcionDireccion(),
+                proveedor.getTipoDocumento(),
+                proveedor.getNumeroDocumento()
         );
 
-        var entity = ProveedorEntityAssambler.getInstance().toEntity(domainACrear);
+        ProveedorEntity entity = ProveedorEntityAssambler.getInstance().toEntity(domainACrear);
         factory.getProveedorDAO().create(entity);
     }
 
-    private void validarIntegridadInformacionRegistrarProveedor(final ProveedorDomain p) throws VapomanagerException {
+    public void validarIntegridadInformacionRegistrarProveedor(final ProveedorDomain p) throws VapomanagerException {
+
+        
         if (UtilTexto.getInstance().estaVacia(p.getNombreEmpresa())) {
             throw BusinessLogicVapomanagerException.reportar("El nombre de la empresa es obligatorio");
         }
@@ -59,6 +62,7 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
             throw BusinessLogicVapomanagerException.reportar("El nombre de la empresa supera los 100 caracteres");
         }
 
+        
         if (UtilTexto.getInstance().estaVacia(p.getCorreoElectronico())) {
             throw BusinessLogicVapomanagerException.reportar("El correo electrónico es obligatorio");
         }
@@ -69,30 +73,39 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
             throw BusinessLogicVapomanagerException.reportar("El correo electrónico supera los 100 caracteres");
         }
 
+        
         if (!UtilNumero.esPositivo(p.getNumeroTelefono())) {
-            throw BusinessLogicVapomanagerException.reportar("El número de teléfono es obligatorio y debe ser positivo");
+            throw BusinessLogicVapomanagerException.reportar("El número de teléfono es obligatorio y debe ser un numero positivo");
+        }
+        if (!String.valueOf(p.getNumeroTelefono()).matches("\\d+")) {
+            throw BusinessLogicVapomanagerException.reportar("El número de teléfono solo puede contener dígitos");
         }
 
+        
         if (!UtilNumero.esPositivo(p.getNumeroDocumento())) {
-            throw BusinessLogicVapomanagerException.reportar("El número de documento es obligatorio y debe ser positivo");
+            throw BusinessLogicVapomanagerException.reportar("El número de documento es obligatorio y debe un numero positivo");
         }
-        var lenDoc = String.valueOf(p.getNumeroDocumento()).length();
+        if (!String.valueOf(p.getNumeroDocumento()).matches("\\d+")) {
+            throw BusinessLogicVapomanagerException.reportar("El número de documento solo puede contener dígitos");
+        }
+        int lenDoc = String.valueOf(p.getNumeroDocumento()).length();
         if (lenDoc < 6 || lenDoc > 12) {
             throw BusinessLogicVapomanagerException.reportar("El número de documento debe tener entre 6 y 12 dígitos");
         }
     }
 
+    
     private void validarNoExistaProveedorConMismoID(final UUID id) throws VapomanagerException {
         if (!UtilUUID.esValorDefecto(id)) {
-            var existente = factory.getProveedorDAO().listById(id);
-            if (!UtilUUID.esValorDefecto(existente.getId())) {
+            ProveedorEntity existente = factory.getProveedorDAO().listById(id);
+            if (existente != null) {
                 throw BusinessLogicVapomanagerException.reportar("Ya existe un proveedor con el mismo ID");
             }
         }
     }
 
     private void validarNoExistaProveedorConMismoCorreo(final String correo) throws VapomanagerException {
-        var filtro = new ProveedorEntity();
+        ProveedorEntity filtro = new ProveedorEntity();
         filtro.setCorreoElectronico(correo);
         if (!factory.getProveedorDAO().listByFilter(filtro).isEmpty()) {
             throw BusinessLogicVapomanagerException.reportar("Ya existe un proveedor con ese correo electrónico");
@@ -100,7 +113,7 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
     }
 
     private void validarNoExistaProveedorConMismoTelefono(final long telefono) throws VapomanagerException {
-        var filtro = new ProveedorEntity();
+        ProveedorEntity filtro = new ProveedorEntity();
         filtro.setNumeroTelefono(telefono);
         if (!factory.getProveedorDAO().listByFilter(filtro).isEmpty()) {
             throw BusinessLogicVapomanagerException.reportar("Ya existe un proveedor con ese número de teléfono");
@@ -108,24 +121,28 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
     }
 
     private void validarNoExistaProveedorConMismoDocumento(final long documento) throws VapomanagerException {
-        var filtro = new ProveedorEntity();
+        ProveedorEntity filtro = new ProveedorEntity();
         filtro.setNumeroDocumento(documento);
         if (!factory.getProveedorDAO().listByFilter(filtro).isEmpty()) {
             throw BusinessLogicVapomanagerException.reportar("Ya existe un proveedor con ese número de documento");
         }
     }
 
+    
     private UUID generarIdentificadorNuevoProveedor() throws VapomanagerException {
         UUID nuevoId;
+        ProveedorEntity existente;
         do {
             nuevoId = UtilUUID.generarNuevoUUID();
-        } while (!UtilUUID.esValorDefecto(factory.getProveedorDAO().listById(nuevoId).getId()));
+            existente = factory.getProveedorDAO().listById(nuevoId);
+        } while (existente != null);
         return nuevoId;
     }
 
+    
     @Override
     public void modificarProveedorExistente(final UUID id, final ProveedorDomain p) throws VapomanagerException {
-        var entity = ProveedorEntityAssambler.getInstance().toEntity(p);
+        ProveedorEntity entity = ProveedorEntityAssambler.getInstance().toEntity(p);
         factory.getProveedorDAO().update(id, entity);
     }
 
@@ -136,14 +153,14 @@ public final class ProveedorBusinessLogicImpl implements ProveedorBusinessLogic 
 
     @Override
     public ProveedorDomain consultarProveedorPorId(final UUID id) throws VapomanagerException {
-        var entity = factory.getProveedorDAO().listById(id);
+        ProveedorEntity entity = factory.getProveedorDAO().listById(id);
         return ProveedorEntityAssambler.getInstance().toDomain(entity);
     }
 
     @Override
     public List<ProveedorDomain> consultarProveedores(final ProveedorDomain filtro) throws VapomanagerException {
-        var filtroEntity = ProveedorEntityAssambler.getInstance().toEntity(filtro);
-        var entities = factory.getProveedorDAO().listByFilter(filtroEntity);
+        ProveedorEntity filtroEntity = ProveedorEntityAssambler.getInstance().toEntity(filtro);
+        List<ProveedorEntity> entities = factory.getProveedorDAO().listByFilter(filtroEntity);
         return ProveedorEntityAssambler.getInstance().toDomain(entities);
     }
 }

@@ -10,9 +10,11 @@ import java.util.UUID;
 
 public interface ProveedorBusinessLogic {
 
-    void registrarNuevoProveedor(ProveedorDomain pais)throws VapomanagerException;
-    void modificarProveedorExistente(UUID id, ProveedorDomain pais)throws VapomanagerException;
+    void registrarNuevoProveedor(ProveedorDomain proveedor)throws VapomanagerException;
+    void modificarProveedorExistente(UUID id, ProveedorDomain proveedor)throws VapomanagerException;
     void darBajaDefinitivamenteProveedorExistente(UUID id)throws VapomanagerException;
     ProveedorDomain consultarProveedorPorId(UUID id)throws VapomanagerException;
     List<ProveedorDomain> consultarProveedores(ProveedorDomain filtro)throws VapomanagerException;
+    
+    void validarIntegridadInformacionRegistrarProveedor(ProveedorDomain proveedor) throws VapomanagerException;
 }

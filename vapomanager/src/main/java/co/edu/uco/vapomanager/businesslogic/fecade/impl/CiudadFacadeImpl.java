@@ -22,8 +22,8 @@ public class CiudadFacadeImpl implements CiudadFacade {
     private final DAOFactory daoFactory;
     private final CiudadBusinessLogic ciudadBusinessLogic;
 
-    public CiudadFacadeImpl(final DataSource dataSource) throws VapomanagerException {
-        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL, dataSource);
+    public CiudadFacadeImpl() throws VapomanagerException {
+        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL);
         ciudadBusinessLogic = new CiudadBusinessLogicImpl(daoFactory);
     }
 

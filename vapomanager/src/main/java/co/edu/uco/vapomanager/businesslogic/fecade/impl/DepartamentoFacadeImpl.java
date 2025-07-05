@@ -22,8 +22,8 @@ public class DepartamentoFacadeImpl implements DepartamentoFacade {
     private final DAOFactory daoFactory;
     private final DepartamentoBusinessLogic departamentoBusinessLogic;
 
-    public DepartamentoFacadeImpl(final DataSource dataSource) throws VapomanagerException {
-        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL, dataSource);
+    public DepartamentoFacadeImpl() throws VapomanagerException {
+        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL);
         departamentoBusinessLogic = new DepartamentoBusinessLogicImpl(daoFactory);
     }
 

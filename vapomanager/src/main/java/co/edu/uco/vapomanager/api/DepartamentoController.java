@@ -23,9 +23,9 @@ public class DepartamentoController {
     
     private final DepartamentoFacade departamentoFacade;
 
-    // Spring inyectará el DataSource automáticamente
-    public DepartamentoController(DataSource dataSource) throws VapomanagerException {
-        this.departamentoFacade = new DepartamentoFacadeImpl(dataSource);
+    
+    public DepartamentoController() throws VapomanagerException {
+        this.departamentoFacade = new DepartamentoFacadeImpl();
     }
 
     @GetMapping("/dummy")

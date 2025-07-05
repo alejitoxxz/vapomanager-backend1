@@ -7,7 +7,6 @@ import co.edu.uco.vapomanager.data.dao.entity.ciudad.CiudadDAO;
 import co.edu.uco.vapomanager.entity.CiudadEntity;
 import co.edu.uco.vapomanager.entity.DepartamentoEntity;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,142 +15,149 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CiudadPostgreSQLDAO implements CiudadDAO {
+public final class CiudadPostgreSQLDAO implements CiudadDAO {
 
-    private final DataSource dataSource;
+   
+    private final Connection conexion;
 
-    public CiudadPostgreSQLDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public CiudadPostgreSQLDAO(final Connection conexion) {
+        this.conexion = conexion;
     }
 
+    
     @Override
     public List<CiudadEntity> listAll() throws VapomanagerException {
-        var listaResultados = new ArrayList<CiudadEntity>();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, nombre, departamento_id FROM ciudad ORDER BY nombre ASC");
 
-        try (
-            Connection conexion = dataSource.getConnection();
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString());
-            ResultSet cursorResultados = sentenciaPreparada.executeQuery()
-        ) {
-            while (cursorResultados.next()) {
-                var ciudadRetorno = new CiudadEntity();
-                ciudadRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                ciudadRetorno.setNombre(cursorResultados.getString("nombre"));
-                var departamento = new DepartamentoEntity();
-                departamento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("departamento_id")));
-                ciudadRetorno.setDepartamento(departamento);
+        final List<CiudadEntity> resultados = new ArrayList<>();
+        final String sql = """
+            SELECT id, nombre, departamento_id
+              FROM ciudad
+          ORDER BY nombre ASC
+            """;
 
-                listaResultados.add(ciudadRetorno);
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                resultados.add(mapearCiudad(rs));
             }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar la informacion de toddos las ciudades...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla ciudad para consultar todos los registros...";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo ciudad...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla ciudad, para consultar todos los registros... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Error al consultar ciudades.",
+                "SQLException en SELECT * de ciudad.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Error inesperado al consultar ciudades.",
+                "Excepción NO CONTROLADA en listAll.", e);
         }
 
-        return listaResultados;
+        return resultados;
     }
 
+    
     @Override
-    public List<CiudadEntity> listByFilter(CiudadEntity filter) throws VapomanagerException {
-        var listaResultados = new ArrayList<CiudadEntity>();
-        var sentenciaSQL = new StringBuilder();
-        sentenciaSQL.append("SELECT c.id AS ciudad_id, c.nombre AS ciudad_nombre, d.id AS departamento_id, d.nombre AS departamento_nombre ");
-        sentenciaSQL.append("FROM ciudad c ");
-        sentenciaSQL.append("INNER JOIN departamento d ON c.departamento_id = d.id ");
+    public List<CiudadEntity> listByFilter(final CiudadEntity filter) throws VapomanagerException {
 
-        var condiciones = new ArrayList<String>();
+        final List<CiudadEntity> resultados = new ArrayList<>();
+        final StringBuilder sql = new StringBuilder("""
+            SELECT c.id, c.nombre,
+                   d.id AS departamento_id,
+                   d.nombre AS departamento_nombre
+              FROM ciudad c
+         INNER JOIN departamento d ON c.departamento_id = d.id
+             WHERE 1 = 1
+            """);
+
+        final List<Object> params = new ArrayList<>();
+
         if (!UtilUUID.esValorDefecto(filter.getId())) {
-            condiciones.add("c.id = ?");
+            sql.append(" AND c.id = ?");
+            params.add(filter.getId());
         }
-        if (!UtilUUID.esValorDefecto(filter.getDepartamento().getId())) {
-            condiciones.add("d.id = ?");
+        if (filter.getNombre() != null && !filter.getNombre().isBlank()) {
+            sql.append(" AND c.nombre ILIKE ?");
+            params.add('%' + filter.getNombre().trim() + '%');
+        }
+        if (filter.getDepartamento() != null && !UtilUUID.esValorDefecto(filter.getDepartamento().getId())) {
+            sql.append(" AND d.id = ?");
+            params.add(filter.getDepartamento().getId());
         }
 
-        if (!condiciones.isEmpty()) {
-            sentenciaSQL.append("WHERE ");
-            sentenciaSQL.append(String.join(" AND ", condiciones));
-        }
+        sql.append(" ORDER BY c.nombre ASC");
 
-        sentenciaSQL.append(" ORDER BY c.nombre ASC");
+        try (PreparedStatement ps = conexion.prepareStatement(sql.toString())) {
 
-        try (
-            Connection conexion = dataSource.getConnection();
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(sentenciaSQL.toString())
-        ) {
-            int posicion = 1;
-
-            if (!UtilUUID.esValorDefecto(filter.getId())) {
-                sentenciaPreparada.setObject(posicion++, filter.getId());
-            }
-            if (!UtilUUID.esValorDefecto(filter.getDepartamento().getId())) {
-                sentenciaPreparada.setObject(posicion++, filter.getDepartamento().getId());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
             }
 
-            try (ResultSet cursorResultados = sentenciaPreparada.executeQuery()) {
-                while (cursorResultados.next()) {
-                    var ciudadRetorno = new CiudadEntity();
-                    ciudadRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("ciudad_id")));
-                    ciudadRetorno.setNombre(cursorResultados.getString("ciudad_nombre"));
-
-                    var departamento = new DepartamentoEntity();
-                    departamento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("departamento_id")));
-                    departamento.setNombre(cursorResultados.getString("departamento_nombre"));
-                    ciudadRetorno.setDepartamento(departamento);
-
-                    listaResultados.add(ciudadRetorno);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    var ciudad = mapearCiudad(rs);
+                    ciudad.getDepartamento().setNombre(rs.getString("departamento_nombre"));
+                    resultados.add(ciudad);
                 }
             }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "Se presentó un problema tratando de consultar las ciudades filtradas.";
-            var mensajeTecnico = "Se lanzó SQLException ejecutando SELECT con JOIN en la tabla ciudad y departamento.";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "Se presentó un problema inesperado al consultar las ciudades filtradas.";
-            var mensajeTecnico = "Se lanzó una excepción NO CONTROLADA al hacer SELECT con JOIN.";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Error al filtrar ciudades.",
+                "SQLException en SELECT con filtro de ciudad.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Error inesperado al filtrar ciudades.",
+                "Excepción NO CONTROLADA en listByFilter.", e);
         }
 
-        return listaResultados;
+        return resultados;
     }
 
+    
     @Override
-    public CiudadEntity listById(UUID id) throws VapomanagerException {
-        var ciudadRetorno = new CiudadEntity();
-        var senteciaSQL = new StringBuilder();
-        senteciaSQL.append("SELECT id, nombre, departamento_id FROM ciudad WHERE id = ?");
+    public CiudadEntity listById(final UUID id) throws VapomanagerException {
 
-        try (
-            Connection conexion = dataSource.getConnection();
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(senteciaSQL.toString())
-        ) {
-            sentenciaPreparada.setObject(1, id);
+        final String sql = """
+            SELECT id, nombre, departamento_id
+              FROM ciudad
+             WHERE id = ?
+            """;
 
-            try (ResultSet cursorResultados = sentenciaPreparada.executeQuery()) {
-                if (cursorResultados.next()) {
-                    ciudadRetorno.setId(UtilUUID.convertirAUUID(cursorResultados.getString("id")));
-                    ciudadRetorno.setNombre(cursorResultados.getString("nombre"));
-                    var departamento = new DepartamentoEntity();
-                    departamento.setId(UtilUUID.convertirAUUID(cursorResultados.getString("departamento_id")));
-                    ciudadRetorno.setDepartamento(departamento);
+        CiudadEntity ciudad = null;
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setObject(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ciudad = mapearCiudad(rs);
                 }
             }
-        } catch (SQLException exception) {
-            var mensajeUsuario = "se ha presentado un problema tratando de consultar el ciudad con el identificador deseado la informacion del nuevo ciudad...";
-            var mensajeTecnico = "se presento una excepcion de tipo SQLExeption tratando de hacer un SELECT en la tabla ciudad por id, para tener mas detalles revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
-        } catch (Exception exception) {
-            var mensajeUsuario = "se ha presentado un problema INESPERADO tratando de consultar la informacion del nuevo ciudad...";
-            var mensajeTecnico = "se presento una excepcion NO CONTROLADA de tipo Eception tratando de hacer un SELECT en la tabla ciudad, para tener mas detalles, revise el log de errores... ";
-            throw DataVapomanagerException.reportar(mensajeUsuario, mensajeTecnico, exception);
+
+        } catch (SQLException e) {
+            throw DataVapomanagerException.reportar(
+                "Error al consultar ciudad por ID.",
+                "SQLException en SELECT por ID de ciudad.", e);
+        } catch (Exception e) {
+            throw DataVapomanagerException.reportar(
+                "Error inesperado al consultar ciudad por ID.",
+                "Excepción NO CONTROLADA en listById.", e);
         }
 
-        return ciudadRetorno;
+        return ciudad;
+    }
+
+    
+    private CiudadEntity mapearCiudad(final ResultSet rs) throws SQLException {
+
+        var ciudad = new CiudadEntity();
+        ciudad.setId(UtilUUID.convertirAUUID(rs.getString("id")));
+        ciudad.setNombre(rs.getString("nombre"));
+
+        var depto = new DepartamentoEntity();
+        depto.setId(UtilUUID.convertirAUUID(rs.getString("departamento_id")));
+        ciudad.setDepartamento(depto);
+
+        return ciudad;
     }
 }

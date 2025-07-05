@@ -27,8 +27,8 @@ public class ProveedorController {
 
     private final ProveedorFacade proveedorFachada;
 
-    public ProveedorController(DataSource dataSource) throws VapomanagerException {
-        proveedorFachada = new ProveedorFacadeImpl(dataSource);
+    public ProveedorController() throws VapomanagerException {
+        proveedorFachada = new ProveedorFacadeImpl();
     }
 
     @GetMapping("/dummy")

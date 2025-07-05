@@ -22,8 +22,8 @@ public class AdministradorFacadeImpl implements AdministradorFacade {
     private final DAOFactory daoFactory;
     private final AdministradorBusinessLogic administradorBusinessLogic;
 
-    public AdministradorFacadeImpl(final DataSource dataSource) throws VapomanagerException {
-        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL, dataSource);
+    public AdministradorFacadeImpl() throws VapomanagerException {
+        daoFactory = DAOFactory.getFactory(Factory.POSTGRESQL);
         administradorBusinessLogic = new AdministradorBusinessLogicImpl(daoFactory);
     }
 
